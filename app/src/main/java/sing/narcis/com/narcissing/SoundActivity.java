@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 
 import bg.cytec.android.fskmodem.FSKConfig;
 import bg.cytec.android.fskmodem.FSKDecoder;
@@ -25,10 +26,48 @@ VIE SHARE
  */
 
 public class SoundActivity extends Activity {
+    static String ENCODER_DATA;
+
     private AudioTrack mAudioTrack;
     protected FSKConfig mConfig;
     protected FSKEncoder mEncoder;
     protected FSKDecoder mDecoder;
+
+    protected Runnable mDataFeeder = new Runnable() {
+
+        @Override
+        public void run() {
+            byte[] data = ENCODER_DATA.getBytes();
+
+            if (data.length > FSKConfig.ENCODER_DATA_BUFFER_SIZE) {
+                //chunk data
+
+                byte[] buffer = new byte[FSKConfig.ENCODER_DATA_BUFFER_SIZE];
+
+                ByteBuffer dataFeed = ByteBuffer.wrap(data);
+
+                while (dataFeed.remaining() > 0) {
+
+                    if (dataFeed.remaining() < buffer.length) {
+                        buffer = new byte[dataFeed.remaining()];
+                    }
+
+                    dataFeed.get(buffer);
+
+                    mEncoder.appendData(buffer);
+
+                    try {
+                        Thread.sleep(100); //wait for encoder to do its job, to avoid buffer overflow and data rejection
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            else {
+                mEncoder.appendData(data);
+            }
+        }
+    };
 
 
     @Override
@@ -43,20 +82,37 @@ public class SoundActivity extends Activity {
                 Log.d(Config.DEBUG_KEY, "rawL:" + raw.length + " db:" + decibel);
             }
         });
-    }
-
-
-    @OnClick(R.id.sound1)
-    public void onClickSound1(View v) {
-        Toast.makeText(SoundActivity.this, "1", Toast.LENGTH_SHORT).show();
 
         try {
-            mConfig = new FSKConfig(FSKConfig.SAMPLE_RATE_44100, FSKConfig.PCM_8BIT, FSKConfig.CHANNELS_MONO, FSKConfig.SOFT_MODEM_MODE_9, FSKConfig.THRESHOLD_20P);
+            mConfig = new FSKConfig(FSKConfig.SAMPLE_RATE_44100, FSKConfig.PCM_8BIT, FSKConfig.CHANNELS_MONO, FSKConfig.SOFT_MODEM_MODE_9, FSKConfig.THRESHOLD_1P);
         } catch (IOException e1) {
             e1.printStackTrace();
         }
 
+        /// INIT FSK DECODER
+
+        mDecoder = new FSKDecoder(mConfig, new FSKDecoder.FSKDecoderCallback() {
+
+            @Override
+            public void decoded(byte[] newData) {
+
+                final String text = new String(newData);
+
+                runOnUiThread(new Runnable() {
+                    public void run() {
+                        Toast.makeText(SoundActivity.this, "run()", Toast.LENGTH_SHORT).show();
+
+//                        TextView view = ((TextView) findViewById(R.id.result));
+
+//                        view.setText(view.getText()+text);
+
+                    }
+                });
+            }
+        });
+
         /// INIT FSK ENCODER
+
         mEncoder = new FSKEncoder(mConfig, new FSKEncoder.FSKEncoderCallback() {
 
             @Override
@@ -64,7 +120,14 @@ public class SoundActivity extends Activity {
                 if (mConfig.pcmFormat == FSKConfig.PCM_8BIT) {
                     //8bit buffer is populated, 16bit buffer is null
 
-                    mAudioTrack.write(pcm8, 0, pcm8.length);
+                    for(int i=0; i<20; i++) {
+                        mAudioTrack.write(pcm8, 0, pcm8.length);
+                        try {
+                            Thread.sleep(30); //wait for encoder to do its job, to avoid buffer overflow and data rejection
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
 
                     mDecoder.appendSignal(pcm8);
                 }
@@ -87,27 +150,58 @@ public class SoundActivity extends Activity {
 
         mAudioTrack.play();
 
+    }
+
+
+    @Override
+    protected void onDestroy() {
+        mDecoder.stop();
+
+        mEncoder.stop();
+
+        mAudioTrack.stop();
+        mAudioTrack.release();
+
+        super.onDestroy();
+    }
+
+
+    @OnClick(R.id.sound1)
+    public void onClickSound1(View v) {
+        ENCODER_DATA = "r";
+        Toast.makeText(SoundActivity.this, ENCODER_DATA, Toast.LENGTH_SHORT).show();
+        new Thread(mDataFeeder, ENCODER_DATA).start();
 
     }
 
     @OnClick(R.id.sound2)
     public void onClickSound2(View v) {
-        Toast.makeText(SoundActivity.this, "2", Toast.LENGTH_SHORT).show();
+        ENCODER_DATA = "g";
+        Toast.makeText(SoundActivity.this, ENCODER_DATA, Toast.LENGTH_SHORT).show();
+        new Thread(mDataFeeder, ENCODER_DATA).start();
     }
 
     @OnClick(R.id.sound3)
     public void onClickSound3(View v) {
-        Toast.makeText(SoundActivity.this, "3", Toast.LENGTH_SHORT).show();
+        ENCODER_DATA = "b";
+        Toast.makeText(SoundActivity.this, ENCODER_DATA, Toast.LENGTH_SHORT).show();
+        new Thread(mDataFeeder, ENCODER_DATA).start();
     }
 
     @OnClick(R.id.sound4)
     public void onClickSound4(View v) {
         Toast.makeText(SoundActivity.this, "4", Toast.LENGTH_SHORT).show();
+        ENCODER_DATA = "r";
+        Toast.makeText(SoundActivity.this, ENCODER_DATA, Toast.LENGTH_SHORT).show();
+        new Thread(mDataFeeder, ENCODER_DATA).start();
     }
 
     @OnClick(R.id.sound5)
     public void onClickSound5(View v) {
         Toast.makeText(SoundActivity.this, "5", Toast.LENGTH_SHORT).show();
+        ENCODER_DATA = "rgbywc";
+        Toast.makeText(SoundActivity.this, ENCODER_DATA, Toast.LENGTH_SHORT).show();
+        new Thread(mDataFeeder, ENCODER_DATA).start();
     }
 
 

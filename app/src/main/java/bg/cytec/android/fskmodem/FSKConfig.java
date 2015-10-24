@@ -69,7 +69,7 @@ public class FSKConfig {
 
 	public static final int SOFT_MODEM_MODE_9 = 9;
 	public static final int SOFT_MODEM_MODE_9_BAUD_RATE = 2450;
-	public static final int SOFT_MODEM_MODE_9_LOW_FREQ = 17680;
+	public static final int SOFT_MODEM_MODE_9_LOW_FREQ =  17680;
 	public static final int SOFT_MODEM_MODE_9_HIGH_FREQ = 23520;
 
 	public static final int THRESHOLD_1P = 1; // above and under; sums 2%

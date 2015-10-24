@@ -12,19 +12,19 @@
         android:id="@+id/sound1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="1"/>
+        android:text="r"/>
 
     <Button
         android:id="@+id/sound2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="2"/>
+        android:text="g"/>
 
     <Button
         android:id="@+id/sound3"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="3"/>
+        android:text="b"/>
 
     <Button
         android:id="@+id/sound4"
