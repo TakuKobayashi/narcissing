@@ -11,12 +11,14 @@ public class AudioRecordThread extends ContextSingletonBase<AudioRecordThread> {
     private byte[] mRecordingBuffer;
     private AudioRecord mAudioRecord = null;
     private boolean bIsRecording;
+    private double baseValue;
 
-    public void init(Context context){
+    public void init(Context context) {
         super.init(context);
     }
 
-    public void startRecording(){
+    public void startRecording() {
+        baseValue = 12.0;
         mRecordingBuffer = new byte[AudioRecord.getMinBufferSize(SAMPLING_RATE,
                 AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT) * 2];
         mAudioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC, SAMPLING_RATE,
@@ -31,8 +33,19 @@ public class AudioRecordThread extends ContextSingletonBase<AudioRecordThread> {
             public void run() {
                 while (bIsRecording) {
                     // 録音データ読み込み
-                    mAudioRecord.read(mRecordingBuffer, 0, mRecordingBuffer.length);
+                    int read = mAudioRecord.read(mRecordingBuffer, 0, mRecordingBuffer.length);
+                    if (read < 0) {
+                        throw new IllegalStateException();
+                    }
                     Log.d(Config.DEBUG_KEY, "buffered:" + mRecordingBuffer.length);
+
+                    int maxValue = 0;
+                    for (int i = 0; i < read; i++) {
+                        maxValue = Math.max(maxValue, mRecordingBuffer[0]);
+                    }
+
+                    double db = 20.0 * Math.log10(maxValue / baseValue);
+                    Log.e("TAG",String.format("dB: %02.0f",db));
                 }
                 mAudioRecord.stop();
             }
