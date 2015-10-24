@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.hardware.Camera;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.SurfaceHolder;
@@ -15,113 +16,94 @@ import java.io.IOException;
 
 public class CameraActivity extends Activity {
 
-    private static final String TAG = "TAG";
-
     private Camera mCamera;
-    private CameraPreview mPreview;
+    private CameraOverrideView mCameraOverrideView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.camera);
-
-        // Create an instance of Camera
-        mCamera = getCameraInstance();
-
-        // Create our Preview view and set it as the content of our activity.
-        mPreview = new CameraPreview(this, mCamera);
-        FrameLayout preview = (FrameLayout) findViewById(R.id.camera_preview);
-        preview.addView(mPreview);
+        mCameraOverrideView = (CameraOverrideView) findViewById(R.id.camera_override_view);
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        setupCamera();
+    }
 
-    /**
-     * A safe way to get an instance of the Camera object.
-     */
-    public static Camera getCameraInstance() {
-        Camera c = null;
+    @Override
+    protected void onPause() {
+        super.onPause();
+        releaseCamera();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mCameraOverrideView.releaseAllImage();
+    }
+
+    private void setupCamera(){
         try {
-            c = Camera.open(); // attempt to get a Camera instance
+            mCamera = Camera.open(); // attempt to get a Camera instance
         } catch (Exception e) {
             // Camera is not available (in use or does not exist)
+            return;
         }
-        return c; // returns null if camera is unavailable
+        SurfaceView preview = (SurfaceView) findViewById(R.id.camera_preview);
+        SurfaceHolder holder = preview.getHolder();
+        holder.addCallback(new SurfaceHolder.Callback() {
+
+            @Override
+            public void surfaceDestroyed(SurfaceHolder holder) {
+                releaseCamera();
+            }
+
+            @Override
+            public void surfaceCreated(SurfaceHolder holder) {
+                if (mCamera != null) {
+                    try {
+                        mCamera.setPreviewDisplay(holder);
+                    } catch (IOException exception) {
+                        releaseCamera();
+                    }
+                }
+            }
+
+            @Override
+            public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+                if (mCamera != null) {
+                    try {
+                        mCamera.setPreviewDisplay(holder);
+                    } catch (IOException exception) {
+                        releaseCamera();
+                    }
+                }
+            }
+        });
+        if(Build.VERSION.SDK_INT < 11){
+            holder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+        }
+        try {
+            mCamera.setPreviewDisplay(holder);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        mCamera.stopPreview();
+        //今回はフロントカメラのみなのでCameraIdは0のみ使う
+        mCamera.setDisplayOrientation(ApplicationHelper.getCameraDisplayOrientation(this, 0));
+        mCamera.startPreview();
     }
 
-    /**
-     * Check if this device has a camera
-     */
-    private boolean checkCameraHardware(Context context) {
-        if (context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)) {
-            // this device has a camera
-            return true;
-        } else {
-            // no camera on this device
-            return false;
-        }
-    }
 
-
-    /**
-     * A basic Camera preview class
-     */
-    public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback {
-        private SurfaceHolder mHolder;
-        private Camera mCamera;
-
-        public CameraPreview(Context context, Camera camera) {
-            super(context);
-            mCamera = camera;
-
-            // Install a SurfaceHolder.Callback so we get notified when the
-            // underlying surface is created and destroyed.
-            mHolder = getHolder();
-            mHolder.addCallback(this);
-            // deprecated setting, but required on Android versions prior to 3.0
-            mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
-        }
-
-        public void surfaceCreated(SurfaceHolder holder) {
-            // The Surface has been created, now tell the camera where to draw the preview.
-            try {
-                mCamera.setPreviewDisplay(holder);
-                mCamera.startPreview();
-            } catch (IOException e) {
-                Log.d(TAG, "Error setting camera preview: " + e.getMessage());
-            }
-        }
-
-        public void surfaceDestroyed(SurfaceHolder holder) {
-            // empty. Take care of releasing the Camera preview in your activity.
-        }
-
-        public void surfaceChanged(SurfaceHolder holder, int format, int w, int h) {
-            // If your preview can change or rotate, take care of those events here.
-            // Make sure to stop the preview before resizing or reformatting it.
-
-            if (mHolder.getSurface() == null) {
-                // preview surface does not exist
-                return;
-            }
-
-            // stop preview before making changes
-            try {
-                mCamera.stopPreview();
-            } catch (Exception e) {
-                // ignore: tried to stop a non-existent preview
-            }
-
-            // set preview size and make any resize, rotate or
-            // reformatting changes here
-
-            // start preview with new settings
-            try {
-                mCamera.setPreviewDisplay(mHolder);
-                mCamera.startPreview();
-
-            } catch (Exception e) {
-                Log.d(TAG, "Error starting camera preview: " + e.getMessage());
-            }
-        }
+    private void releaseCamera(){
+        if (mCamera != null){
+            mCamera.cancelAutoFocus();
+            mCamera.stopPreview();
+            mCamera.setPreviewCallback(null);
+            mCamera.release();
+            mCamera = null;
+        };
     }
 }
