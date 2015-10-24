@@ -5,6 +5,7 @@ import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -35,6 +36,13 @@ public class SoundActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.sound);
         ButterKnife.bind(this);
+        //AudioRecordThreadからマイクから拾った音を受け取る場合はこのような感じでCallbackを設定すると値が取得できる
+        AudioRecordThread.getInstance(AudioRecordThread.class).setOnAudioRecordCallback(new AudioRecordThread.AudioRecordCallback() {
+            @Override
+            public void onRecord(byte[] raw, double decibel) {
+                Log.d(Config.DEBUG_KEY, "rawL:" + raw.length + " db:" + decibel);
+            }
+        });
     }
 
 

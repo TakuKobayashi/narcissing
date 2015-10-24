@@ -12,6 +12,7 @@ public class AudioRecordThread extends ContextSingletonBase<AudioRecordThread> {
     private AudioRecord mAudioRecord = null;
     private boolean bIsRecording;
     private double baseValue;
+    private AudioRecordCallback mCallback;
 
     public void init(Context context) {
         super.init(context);
@@ -46,6 +47,9 @@ public class AudioRecordThread extends ContextSingletonBase<AudioRecordThread> {
 
                     double db = 20.0 * Math.log10(maxValue / baseValue);
                     Log.e("TAG",String.format("dB: %02.0f",db));
+                    if(mCallback != null){
+                        mCallback.onRecord(mRecordingBuffer, db);
+                    }
                 }
                 mAudioRecord.stop();
             }
@@ -56,10 +60,27 @@ public class AudioRecordThread extends ContextSingletonBase<AudioRecordThread> {
         bIsRecording = false;
     }
 
+    public void release() {
+        mCallback = null;
+        stopRecording();
+    }
+
+    public void setOnAudioRecordCallback(AudioRecordCallback callback) {
+        mCallback = callback;
+    }
+
+    public void removeOnAudioRecordCallback() {
+        mCallback = null;
+    }
+
+    public interface AudioRecordCallback{
+        public void onRecord(byte[] raw, double decibel);
+    }
+
     //デストラクタ
     @Override
     protected void finalize() throws Throwable {
-        stopRecording();
+        release();
         super.finalize();
     }
 }
