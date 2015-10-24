@@ -17,8 +17,11 @@ public class AudioRecordThread extends ContextSingletonBase<AudioRecordThread> {
     }
 
     public void startRecording(){
-        mRecordingBuffer = new byte[AudioRecord.getMinBufferSize(SAMPLING_RATE, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT) * 2];
-        mAudioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC, SAMPLING_RATE, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT, mRecordingBuffer.length);
+        mRecordingBuffer = new byte[AudioRecord.getMinBufferSize(SAMPLING_RATE,
+                AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT) * 2];
+        mAudioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC, SAMPLING_RATE,
+                AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT,
+                mRecordingBuffer.length);
 
         mAudioRecord.startRecording();
         bIsRecording = true;
