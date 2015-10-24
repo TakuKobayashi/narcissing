@@ -17,6 +17,9 @@ public class AssetImageLoader extends ImageLoader {
     //画像を読み込んで実際にメモリに乗っける
     public void preLoad(){
         loadingClear();
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inSampleSize = 2;
+        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
         AssetManager mngr = context.getAssets();
         for (Map.Entry<Long, String> e : fileList.entrySet()) {
             try {
@@ -24,11 +27,11 @@ public class AssetImageLoader extends ImageLoader {
                 if(pathes.length > 0) {
                     for (String path : pathes) {
                         InputStream is = mngr.open(e.getValue() + "/" + path);
-                        loadingImages.add(BitmapFactory.decodeStream(is));
+                        loadingImages.add(BitmapFactory.decodeStream(is, null, options));
                     }
                 }else {
                     InputStream is = mngr.open(e.getValue());
-                    loadingImages.add(BitmapFactory.decodeStream(is));
+                    loadingImages.add(BitmapFactory.decodeStream(is, null, options));
                 }
             } catch (IOException e1) {
                 e1.printStackTrace();
