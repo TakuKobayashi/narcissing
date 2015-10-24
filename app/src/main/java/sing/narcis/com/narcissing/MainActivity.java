@@ -47,5 +47,10 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    @OnClick(R.id.button2)
+    public void onClickButton2(View v) {
+        Intent intent = new Intent(this, SoundActivity.class);
+        startActivity(intent);
+    }
 
 }
