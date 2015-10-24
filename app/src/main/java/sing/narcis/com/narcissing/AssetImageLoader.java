@@ -39,6 +39,15 @@ public class AssetImageLoader extends ImageLoader {
         }
     }
 
+    public void asynkPreLoad(){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                preLoad();
+            }
+        }).start();
+    }
+
     public ArrayList<Bitmap> getLoadingImages(){
         return loadingImages;
     }
