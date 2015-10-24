@@ -7,6 +7,7 @@ import android.media.AudioTrack;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import java.io.IOException;
@@ -101,11 +102,6 @@ public class SoundActivity extends Activity {
                 runOnUiThread(new Runnable() {
                     public void run() {
                         Toast.makeText(SoundActivity.this, "run()", Toast.LENGTH_SHORT).show();
-
-//                        TextView view = ((TextView) findViewById(R.id.result));
-
-//                        view.setText(view.getText()+text);
-
                     }
                 });
             }
@@ -130,6 +126,7 @@ public class SoundActivity extends Activity {
                     }
 
                     mDecoder.appendSignal(pcm8);
+                    enableButton();
                 }
                 else if (mConfig.pcmFormat == FSKConfig.PCM_16BIT) {
                     //16bit buffer is populated, 8bit buffer is null
@@ -152,6 +149,28 @@ public class SoundActivity extends Activity {
 
     }
 
+    private void enableButton() {
+        setButtonEnable(true);
+    }
+
+    public void setButtonEnable(final boolean isEnabled){
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                ((Button) findViewById(R.id.sound1)).setEnabled(isEnabled);
+                ((Button) findViewById(R.id.sound2)).setEnabled(isEnabled);
+                ((Button) findViewById(R.id.sound3)).setEnabled(isEnabled);
+                ((Button) findViewById(R.id.sound4)).setEnabled(isEnabled);
+                ((Button) findViewById(R.id.sound5)).setEnabled(isEnabled);
+                ((Button) findViewById(R.id.sound6)).setEnabled(isEnabled);
+            }
+        });
+    }
+
+
+    private void disableButton() {
+        setButtonEnable(false);
+    }
 
     @Override
     protected void onDestroy() {
@@ -168,6 +187,7 @@ public class SoundActivity extends Activity {
 
     @OnClick(R.id.sound1)
     public void onClickSound1(View v) {
+        setButtonEnable(false);
         ENCODER_DATA = "r";
         Toast.makeText(SoundActivity.this, ENCODER_DATA, Toast.LENGTH_SHORT).show();
         new Thread(mDataFeeder, ENCODER_DATA).start();
@@ -176,6 +196,7 @@ public class SoundActivity extends Activity {
 
     @OnClick(R.id.sound2)
     public void onClickSound2(View v) {
+        setButtonEnable(false);
         ENCODER_DATA = "g";
         Toast.makeText(SoundActivity.this, ENCODER_DATA, Toast.LENGTH_SHORT).show();
         new Thread(mDataFeeder, ENCODER_DATA).start();
@@ -183,6 +204,7 @@ public class SoundActivity extends Activity {
 
     @OnClick(R.id.sound3)
     public void onClickSound3(View v) {
+        setButtonEnable(false);
         ENCODER_DATA = "b";
         Toast.makeText(SoundActivity.this, ENCODER_DATA, Toast.LENGTH_SHORT).show();
         new Thread(mDataFeeder, ENCODER_DATA).start();
@@ -190,19 +212,26 @@ public class SoundActivity extends Activity {
 
     @OnClick(R.id.sound4)
     public void onClickSound4(View v) {
-        Toast.makeText(SoundActivity.this, "4", Toast.LENGTH_SHORT).show();
-        ENCODER_DATA = "r";
+        setButtonEnable(false);
+        ENCODER_DATA = "y";
         Toast.makeText(SoundActivity.this, ENCODER_DATA, Toast.LENGTH_SHORT).show();
         new Thread(mDataFeeder, ENCODER_DATA).start();
     }
 
     @OnClick(R.id.sound5)
     public void onClickSound5(View v) {
-        Toast.makeText(SoundActivity.this, "5", Toast.LENGTH_SHORT).show();
-        ENCODER_DATA = "rgbywc";
+        setButtonEnable(false);
+        ENCODER_DATA = "w";
         Toast.makeText(SoundActivity.this, ENCODER_DATA, Toast.LENGTH_SHORT).show();
         new Thread(mDataFeeder, ENCODER_DATA).start();
     }
 
+    @OnClick(R.id.sound6)
+    public void onClickSound6(View v) {
+        setButtonEnable(false);
+        ENCODER_DATA = "c";
+        Toast.makeText(SoundActivity.this, ENCODER_DATA, Toast.LENGTH_SHORT).show();
+        new Thread(mDataFeeder, ENCODER_DATA).start();
+    }
 
 }

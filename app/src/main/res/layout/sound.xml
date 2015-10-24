@@ -30,13 +30,19 @@
         android:id="@+id/sound4"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="4"/>
+        android:text="y"/>
 
     <Button
         android:id="@+id/sound5"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="5"/>
+        android:text="w"/>
+
+    <Button
+        android:id="@+id/sound6"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="c"/>
 
 </LinearLayout>
 

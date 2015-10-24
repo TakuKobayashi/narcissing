@@ -46,10 +46,10 @@ public class AudioRecordThread extends ContextSingletonBase<AudioRecordThread> {
                     }
 
                     double db = 20.0 * Math.log10(maxValue / baseValue);
-                    Log.e("TAG",String.format("dB: %02.0f",db));
                     if(mCallback != null){
                         mCallback.onRecord(mRecordingBuffer, db);
                     }
+                    Log.d("TAG",String.format("dB: %02.0f",db));
                 }
                 mAudioRecord.stop();
             }
