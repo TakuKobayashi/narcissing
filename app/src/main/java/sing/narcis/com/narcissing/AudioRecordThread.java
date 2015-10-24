@@ -6,8 +6,13 @@ import android.media.AudioRecord;
 import android.media.MediaRecorder;
 import android.util.Log;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+
 public class AudioRecordThread extends ContextSingletonBase<AudioRecordThread> {
     private static final int SAMPLING_RATE = 44100;
+    // FFTのポイント数
+    private static final int FFT_SIZE = 4096;
     private byte[] mRecordingBuffer;
     private AudioRecord mAudioRecord = null;
     private boolean bIsRecording;
@@ -44,6 +49,23 @@ public class AudioRecordThread extends ContextSingletonBase<AudioRecordThread> {
                     for (int i = 0; i < read; i++) {
                         maxValue = Math.max(maxValue, mRecordingBuffer[0]);
                     }
+
+                    //エンディアン変換
+                    ByteBuffer bf = ByteBuffer.wrap(mRecordingBuffer);
+                    bf.order(ByteOrder.LITTLE_ENDIAN);
+                    short[] s = new short[mRecordingBuffer.length];
+                    for (int i = bf.position(); i < bf.capacity() / 2; i++) {
+                        s[i] = bf.getShort();
+                    }
+
+                    //FFTクラスの作成と値の引き渡し
+                    FFT4g fft = new FFT4g(FFT_SIZE);
+                    double[] FFTdata = new double[FFT_SIZE];
+                    for (int i = 0; i < FFT_SIZE; i++) {
+                        FFTdata[i] = (double) s[i];
+                    }
+                    fft.rdft(1, FFTdata);
+                    Log.d(Config.DEBUG_KEY, "");
 
                     double db = 20.0 * Math.log10(maxValue / baseValue);
                     if(mCallback != null){
