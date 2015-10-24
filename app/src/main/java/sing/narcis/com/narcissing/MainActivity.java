@@ -1,22 +1,44 @@
 package sing.narcis.com.narcissing;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import java.util.ArrayList;
+
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends Activity {
+    private static int REQUEST_CODE = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+        requestPermission();
+    }
+
+    private void requestPermission(){
+        if(Build.VERSION.SDK_INT >= 23) {
+            ArrayList<String> permissions = ApplicationHelper.getSettingPermissions(this);
+            boolean isRequestPermission = false;
+            for(String permission : permissions){
+                if(!ApplicationHelper.hasSelfPermission(this, permission)){
+                    isRequestPermission = true;
+                    break;
+                }
+            }
+            if(isRequestPermission) {
+                requestPermissions(permissions.toArray(new String[0]), REQUEST_CODE);
+            }
+        }
     }
 
     @Override
