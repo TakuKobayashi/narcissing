@@ -31,9 +31,8 @@ public class FrameAnimationRenderer{
     RectF dst = new RectF(Math.max((float) (canvas.getWidth() - frame.getWidth()) / 2, 0), Math.max((float)(canvas.getHeight() - frame.getHeight()) / 2, 0), Math.min((float) (canvas.getWidth() + frame.getWidth()) / 2, canvas.getWidth()), Math.min((float) (canvas.getHeight() + frame.getHeight()) / 2, canvas.getHeight()));
     canvas.drawBitmap(mAnimationImages.get(mCurrentFrameIndex), src, dst, null);
     if(mFrameCount % 5 != 0) return;
-    ++mCurrentFrameIndex;
-    if(mAnimationImages.size() <= mCurrentFrameIndex){
-      stopAnimation();
+    if(mAnimationImages.size() - 1 > mCurrentFrameIndex) {
+      ++mCurrentFrameIndex;
     }
   }
 
