@@ -51,10 +51,12 @@ public class CameraActivity extends Activity {
             @Override
             public void onSenssing(float x, float y, float z) {
                 float sum = Math.abs(x) + Math.abs(y) + Math.abs(z);
-                if (sum > 2) {
+                if (sum > 1.5) {
                     headCount++;
+                }else{
+                    headCount = 0;
                 }
-                if(headCount > 20){
+                if(headCount > 50){
                     mCameraOverrideView.startAnimation();
                     headCount = 0;
                 }

@@ -23,18 +23,6 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         requestPermission();
-        SensorStreamer.getInstance(SensorStreamer.class).init(this);
-        SensorStreamer.getInstance(SensorStreamer.class).startSenssing();
-        SensorStreamer.getInstance(SensorStreamer.class).setOnSensorStreamCallback(new SensorStreamer.SensorStreamCallback() {
-            @Override
-            public void onSenssing(float x, float y, float z) {
-                float sum = Math.abs(x) + Math.abs(y) + Math.abs(z);
-                if (sum > 2) {
-                    count++;
-                    Log.d(Config.DEBUG_KEY, "count:" + count);
-                }
-            }
-        });
     }
 
     private void requestPermission(){

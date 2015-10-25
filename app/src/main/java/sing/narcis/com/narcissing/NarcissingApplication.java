@@ -13,6 +13,8 @@ public class NarcissingApplication extends Application {
     }
     AssetImageLoader.getInstance(AssetImageLoader.class).init(this);
     AssetImageLoader.getInstance(AssetImageLoader.class).setImageAssetPathes("frame_png");
+    SensorStreamer.getInstance(SensorStreamer.class).init(this);
+    SensorStreamer.getInstance(SensorStreamer.class).startSenssing();
   }
 
   @Override
