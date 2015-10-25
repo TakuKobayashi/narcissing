@@ -1,21 +1,16 @@
 package sing.narcis.com.narcissing;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.content.res.AssetFileDescriptor;
 import android.hardware.Camera;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
-import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.widget.FrameLayout;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,7 +23,9 @@ public class CameraActivity extends Activity {
     private Camera mCamera;
     private CameraOverrideView mCameraOverrideView;
     private Timer mTimer;
-    private String[] colors = new String[]{VieLedIntentService.WHITE, VieLedIntentService.BLUE, VieLedIntentService.GREEN, VieLedIntentService.RED, VieLedIntentService.YELLOW};
+    private String[] colors = new String[]{VieLedIntentService.WHITE,
+            VieLedIntentService.BLUE, VieLedIntentService.GREEN, VieLedIntentService.RED,
+            VieLedIntentService.YELLOW};
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
