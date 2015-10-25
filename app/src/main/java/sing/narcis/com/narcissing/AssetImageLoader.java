@@ -18,7 +18,7 @@ public class AssetImageLoader extends ImageLoader {
     public void preLoad(){
         loadingClear();
         BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inSampleSize = 2;
+        options.inSampleSize = 3;
         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
         AssetManager mngr = context.getAssets();
         for (Map.Entry<Long, String> e : fileList.entrySet()) {
