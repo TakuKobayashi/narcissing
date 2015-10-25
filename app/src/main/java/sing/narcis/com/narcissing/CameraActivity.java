@@ -9,6 +9,7 @@ import android.media.AudioManager;
 import android.media.AudioTrack;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
@@ -51,12 +52,10 @@ public class CameraActivity extends Activity {
             @Override
             public void onSenssing(float x, float y, float z) {
                 float sum = Math.abs(x) + Math.abs(y) + Math.abs(z);
-                if (sum > 1.5) {
+                if (sum > 1.05) {
                     headCount++;
-                }else{
-                    headCount = 0;
                 }
-                if(headCount > 50){
+                if(headCount > 80){
                     mCameraOverrideView.startAnimation();
                     headCount = 0;
                 }
