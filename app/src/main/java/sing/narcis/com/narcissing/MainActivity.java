@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -16,6 +16,7 @@ import butterknife.OnClick;
 
 public class MainActivity extends Activity {
     private static int REQUEST_CODE = 1;
+    private int count = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,6 +24,18 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         requestPermission();
+        SensorStreamer.getInstance(SensorStreamer.class).init(this);
+        SensorStreamer.getInstance(SensorStreamer.class).startSenssing();
+        SensorStreamer.getInstance(SensorStreamer.class).setOnSensorStreamCallback(new SensorStreamer.SensorStreamCallback() {
+            @Override
+            public void onSenssing(float x, float y, float z) {
+                float sum = Math.abs(x) + Math.abs(y) + Math.abs(z);
+                if (sum > 2) {
+                    count++;
+                    Log.d(Config.DEBUG_KEY, "count:" + count);
+                }
+            }
+        });
     }
 
     private void requestPermission(){
@@ -45,6 +58,7 @@ public class MainActivity extends Activity {
     protected void onDestroy() {
         super.onDestroy();
         AudioRecordThread.getInstance(AudioRecordThread.class).stopRecording();
+        SensorStreamer.getInstance(SensorStreamer.class).release();
     }
 
     @Override
