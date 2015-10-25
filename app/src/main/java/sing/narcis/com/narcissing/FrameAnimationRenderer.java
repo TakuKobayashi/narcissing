@@ -41,6 +41,6 @@ public class FrameAnimationRenderer{
 
   public void startAnimation(){
     if(mAnimationImages.size() > 0) return;
-    //mAnimationImages;
+    mAnimationImages = AssetImageLoader.getInstance(AssetImageLoader.class).getLoadingImages();
   }
 }

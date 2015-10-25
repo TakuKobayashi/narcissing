@@ -24,6 +24,8 @@ public class CameraActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.camera);
         mCameraOverrideView = (CameraOverrideView) findViewById(R.id.camera_override_view);
+        AssetImageLoader.getInstance(AssetImageLoader.class).asynkPreLoad();
+        mCameraOverrideView.startAnimation();
     }
 
     @Override

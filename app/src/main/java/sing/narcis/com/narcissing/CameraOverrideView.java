@@ -42,6 +42,7 @@ public class CameraOverrideView extends View {
     Canvas bitmapCanvas = new Canvas(_renderBaseImage);
     mRenderer.render(bitmapCanvas);
     canvas.drawBitmap(_renderBaseImage, null, new Rect(0,0,_renderBaseImage.getWidth(), _renderBaseImage.getHeight()), null);
+    this.invalidate();
   }
 
   @Override

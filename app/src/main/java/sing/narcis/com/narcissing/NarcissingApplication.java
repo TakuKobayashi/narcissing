@@ -13,7 +13,6 @@ public class NarcissingApplication extends Application {
     }
     AssetImageLoader.getInstance(AssetImageLoader.class).init(this);
     AssetImageLoader.getInstance(AssetImageLoader.class).setImageAssetPathes("frame_png");
-    AssetImageLoader.getInstance(AssetImageLoader.class).asynkPreLoad();
   }
 
   @Override
