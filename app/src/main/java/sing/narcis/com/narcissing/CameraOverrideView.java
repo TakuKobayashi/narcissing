@@ -24,9 +24,11 @@ public class CameraOverrideView extends View {
 
   private Bitmap _clearImage = null;
   private Bitmap _renderBaseImage = null;
+  private FrameAnimationRenderer mRenderer;
 
   public CameraOverrideView(Context context, AttributeSet attrs) {
     super(context, attrs);
+    mRenderer = new FrameAnimationRenderer();
   }
 
   @Override
@@ -38,6 +40,7 @@ public class CameraOverrideView extends View {
     }
     _renderBaseImage = _clearImage.copy(Bitmap.Config.ARGB_8888, true);
     Canvas bitmapCanvas = new Canvas(_renderBaseImage);
+    mRenderer.render(bitmapCanvas);
     canvas.drawBitmap(_renderBaseImage, null, new Rect(0,0,_renderBaseImage.getWidth(), _renderBaseImage.getHeight()), null);
   }
 
@@ -51,7 +54,12 @@ public class CameraOverrideView extends View {
     this.invalidate();
   }
 
+  public void startAnimation(){
+    mRenderer.startAnimation();
+  }
+
   public void releaseAllImage(){
+    mRenderer.stopAnimation();
     if(_clearImage != null){
       _clearImage.recycle();
       _clearImage = null;
