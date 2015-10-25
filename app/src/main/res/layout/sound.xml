@@ -44,6 +44,38 @@
         android:layout_height="wrap_content"
         android:text="c"/>
 
+    <Button
+        android:id="@+id/sound_red"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="red:send to module"/>
+
+    <Button
+        android:id="@+id/sound_green"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="greeen:send to module"/>
+    <Button
+        android:id="@+id/sound_blue"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="blue:send to module"/>
+    <Button
+        android:id="@+id/sound_yellow"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="yellow:send to module"/>
+    <Button
+        android:id="@+id/sound_white"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="white:send to module"/>
+    <Button
+        android:id="@+id/sound_clear"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="clear:send to module"/>
+
 </LinearLayout>
 
 

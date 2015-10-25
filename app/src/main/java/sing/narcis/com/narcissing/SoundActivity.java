@@ -1,6 +1,7 @@
 package sing.narcis.com.narcissing;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
@@ -63,8 +64,7 @@ public class SoundActivity extends Activity {
                         e.printStackTrace();
                     }
                 }
-            }
-            else {
+            } else {
                 mEncoder.appendData(data);
             }
         }
@@ -116,7 +116,7 @@ public class SoundActivity extends Activity {
                 if (mConfig.pcmFormat == FSKConfig.PCM_8BIT) {
                     //8bit buffer is populated, 16bit buffer is null
 
-                    for(int i=0; i<20; i++) {
+                    for (int i = 0; i < 20; i++) {
                         mAudioTrack.write(pcm8, 0, pcm8.length);
                         try {
                             Thread.sleep(30); //wait for encoder to do its job, to avoid buffer overflow and data rejection
@@ -127,8 +127,7 @@ public class SoundActivity extends Activity {
 
                     mDecoder.appendSignal(pcm8);
                     enableButton();
-                }
-                else if (mConfig.pcmFormat == FSKConfig.PCM_16BIT) {
+                } else if (mConfig.pcmFormat == FSKConfig.PCM_16BIT) {
                     //16bit buffer is populated, 8bit buffer is null
 
                     mAudioTrack.write(pcm16, 0, pcm16.length);
@@ -153,7 +152,7 @@ public class SoundActivity extends Activity {
         setButtonEnable(true);
     }
 
-    public void setButtonEnable(final boolean isEnabled){
+    public void setButtonEnable(final boolean isEnabled) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -233,5 +232,39 @@ public class SoundActivity extends Activity {
         Toast.makeText(SoundActivity.this, ENCODER_DATA, Toast.LENGTH_SHORT).show();
         new Thread(mDataFeeder, ENCODER_DATA).start();
     }
+
+
+    @OnClick(R.id.sound_red)
+    public void onClickSoundRed(View v) {
+        startViewLedIntentService(VieLedIntentService.RED);
+    }
+
+    @OnClick(R.id.sound_green)
+    public void onClickSoundGreen(View v) {
+        startViewLedIntentService(VieLedIntentService.GREEN);
+    }
+    @OnClick(R.id.sound_blue)
+    public void onClickSoundBlue(View v) {
+        startViewLedIntentService(VieLedIntentService.BLUE);
+    }
+    @OnClick(R.id.sound_yellow)
+    public void onClickSoundYellow(View v) {
+        startViewLedIntentService(VieLedIntentService.YELLOW);
+    }
+    @OnClick(R.id.sound_white)
+    public void onClickSoundWhite(View v) {
+        startViewLedIntentService(VieLedIntentService.WHITE);
+    }
+    @OnClick(R.id.sound_clear)
+    public void onClickSoundClear(View v) {
+        startViewLedIntentService(VieLedIntentService.CLEAR);
+    }
+
+    private void startViewLedIntentService(final String color) {
+        Intent intent = new Intent(this, VieLedIntentService.class);
+        intent.putExtra(VieLedIntentService.EXTRA_COLOR, color);
+        startService(intent);
+    }
+
 
 }

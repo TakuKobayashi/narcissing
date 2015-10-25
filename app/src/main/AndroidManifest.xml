@@ -30,6 +30,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".SoundActivity" />
+        <service android:name=".VieLedIntentService" />
     </application>
 
 </manifest>
