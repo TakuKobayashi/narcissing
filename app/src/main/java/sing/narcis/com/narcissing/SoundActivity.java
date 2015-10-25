@@ -243,22 +243,71 @@ public class SoundActivity extends Activity {
     public void onClickSoundGreen(View v) {
         startViewLedIntentService(VieLedIntentService.GREEN);
     }
+
     @OnClick(R.id.sound_blue)
     public void onClickSoundBlue(View v) {
         startViewLedIntentService(VieLedIntentService.BLUE);
     }
+
     @OnClick(R.id.sound_yellow)
     public void onClickSoundYellow(View v) {
         startViewLedIntentService(VieLedIntentService.YELLOW);
     }
+
     @OnClick(R.id.sound_white)
     public void onClickSoundWhite(View v) {
         startViewLedIntentService(VieLedIntentService.WHITE);
     }
+
     @OnClick(R.id.sound_clear)
     public void onClickSoundClear(View v) {
         startViewLedIntentService(VieLedIntentService.CLEAR);
     }
+
+    @OnClick(R.id.sound_around_led)
+    public void onClickSoundAroundLed(View v) {
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Log.e("TAG", "    after arond from Thread  Start >>>>");
+                int counter = 0;
+                for (int i = 0; i < 10; i++) {
+                    switch (counter % 6) {
+                        case 0:
+                            startViewLedIntentService(VieLedIntentService.RED);
+                            break;
+                        case 1:
+                            startViewLedIntentService(VieLedIntentService.GREEN);
+                            break;
+                        case 2:
+                            startViewLedIntentService(VieLedIntentService.BLUE);
+                            break;
+                        case 3:
+                            startViewLedIntentService(VieLedIntentService.YELLOW);
+                            break;
+                        case 4:
+                            startViewLedIntentService(VieLedIntentService.WHITE);
+                            break;
+                        case 5:
+                            startViewLedIntentService(VieLedIntentService.CLEAR);
+                            break;
+                        default:
+                            throw new RuntimeException("Around LED error");
+                    }
+                    counter++;
+                    try {
+                        Thread.sleep(1500);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+                Log.e("TAG", "    after arond from Thread  END   <<<<");
+            }
+        }).start();
+
+    }
+
 
     private void startViewLedIntentService(final String color) {
         Intent intent = new Intent(this, VieLedIntentService.class);

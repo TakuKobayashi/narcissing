@@ -76,6 +76,12 @@
         android:layout_height="wrap_content"
         android:text="clear:send to module"/>
 
+    <Button
+        android:id="@+id/sound_around_led"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Around LED start"/>
+
 </LinearLayout>
 
 
