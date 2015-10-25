@@ -16,7 +16,6 @@ import butterknife.OnClick;
 
 public class MainActivity extends Activity {
     private static int REQUEST_CODE = 1;
-    private int count = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

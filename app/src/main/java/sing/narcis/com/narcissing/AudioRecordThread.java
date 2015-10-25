@@ -38,7 +38,7 @@ public class AudioRecordThread extends ContextSingletonBase<AudioRecordThread> {
                     if (read < 0) {
                         throw new IllegalStateException();
                     }
-                    Log.d(Config.DEBUG_KEY, "buffered:" + mRecordingBuffer.length);
+                    //Log.d(Config.DEBUG_KEY, "buffered:" + mRecordingBuffer.length);
 
                     int maxValue = 0;
                     for (int i = 0; i < read; i++) {

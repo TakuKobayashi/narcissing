@@ -23,9 +23,9 @@ public class CameraActivity extends Activity {
     private Camera mCamera;
     private CameraOverrideView mCameraOverrideView;
     private Timer mTimer;
-    private String[] colors = new String[]{VieLedIntentService.WHITE,
-            VieLedIntentService.BLUE, VieLedIntentService.GREEN, VieLedIntentService.RED,
-            VieLedIntentService.YELLOW};
+    private String[] colors = new String[]{VieLedIntentService.WHITE, VieLedIntentService.BLUE, VieLedIntentService.GREEN, VieLedIntentService.RED, VieLedIntentService.YELLOW};
+    private AudioTrack audioTrack;
+    private int headCount = 0;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -34,7 +34,6 @@ public class CameraActivity extends Activity {
         playFromAudioTrack();
         mCameraOverrideView = (CameraOverrideView) findViewById(R.id.camera_override_view);
         AssetImageLoader.getInstance(AssetImageLoader.class).asynkPreLoad();
-        mCameraOverrideView.startAnimation();
 
         mTimer = new Timer();
         TimerTask task = new TimerTask() {
@@ -47,6 +46,20 @@ public class CameraActivity extends Activity {
             }
         };
         mTimer.schedule(task, 0, 2000);
+
+        SensorStreamer.getInstance(SensorStreamer.class).setOnSensorStreamCallback(new SensorStreamer.SensorStreamCallback() {
+            @Override
+            public void onSenssing(float x, float y, float z) {
+                float sum = Math.abs(x) + Math.abs(y) + Math.abs(z);
+                if (sum > 2) {
+                    headCount++;
+                }
+                if(headCount > 20){
+                    mCameraOverrideView.startAnimation();
+                    headCount = 0;
+                }
+            }
+        });
     }
 
     @Override
@@ -66,6 +79,7 @@ public class CameraActivity extends Activity {
         super.onDestroy();
         mCameraOverrideView.releaseAllImage();
         mTimer.cancel();
+        releaseAudio();
     }
 
     private void playFromAudioTrack() {
@@ -87,13 +101,20 @@ public class CameraActivity extends Activity {
                     // 再生
                     audioTrack.play();
                     audioTrack.write(byteData, 46, byteData.length - 46);
-                    audioTrack.stop();
-                    audioTrack.flush();
+                    releaseAudio();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
         }).start();
+    }
+
+    private void releaseAudio(){
+        if(audioTrack != null) {
+            audioTrack.stop();
+            audioTrack.flush();
+            audioTrack = null;
+        }
     }
 
     private void setupCamera(){

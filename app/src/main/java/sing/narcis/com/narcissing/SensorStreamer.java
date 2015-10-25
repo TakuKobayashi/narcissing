@@ -42,10 +42,7 @@ public class SensorStreamer extends ContextSingletonBase<SensorStreamer> impleme
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        Log.d(Config.DEBUG_KEY, "aaaaaaaaaaa");
         if(event.sensor.getType() == Sensor.TYPE_GYROSCOPE) {
-            String str = "ジャイロセンサー値:"  + "\nX軸中心:" + event.values[0] + "\nY軸中心:" + event.values[1] + "\nZ軸中心:" + event.values[2];
-            Log.d(Config.DEBUG_KEY, str);
             if(mCallback != null){
                 mCallback.onSenssing(event.values[0], event.values[1], event.values[2]);
             }
