@@ -17,6 +17,7 @@ public class AssetImageLoader extends ImageLoader {
     //画像を読み込んで実際にメモリに乗っける
     public void preLoad(){
         loadingClear();
+        isLoaded = false;
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inSampleSize = 3;
         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
@@ -37,33 +38,6 @@ public class AssetImageLoader extends ImageLoader {
                 e1.printStackTrace();
             }
         }
-    }
-
-    public void asynkPreLoad(){
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                preLoad();
-            }
-        }).start();
-    }
-
-    public ArrayList<Bitmap> getLoadingImages(){
-        return loadingImages;
-    }
-
-    public ArrayList<Bitmap> loadingImages(){
-        preLoad();
-        return loadingImages;
-    }
-
-    public ArrayList<Long> setImageAssetPathes(String... pathes) {
-        ArrayList<Long> idList = new ArrayList<Long>();
-        for(String path : pathes){
-            currentId += 1;
-            fileList.put(currentId, path);
-            idList.add(currentId);
-        }
-        return idList;
+        isLoaded = true;
     }
 }

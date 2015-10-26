@@ -26,10 +26,7 @@ public class FrameAnimationRenderer{
   }
 
   public void render(Canvas canvas){
-    if(mAnimationImages.size() <= mCurrentFrameIndex){
-      stopAnimation();
-      return;
-    }
+    if(!AssetImageLoader.getInstance(AssetImageLoader.class).IsLoaded()) return;
     ++mFrameCount;
     Bitmap frame = mAnimationImages.get(mCurrentFrameIndex);
     Rect src = new Rect(0,0,frame.getWidth(), frame.getHeight());
