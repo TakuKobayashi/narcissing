@@ -13,11 +13,15 @@ import java.util.ArrayList;
 
 public class FrameAnimationRenderer{
 
-  private static final int LATE_FRAME_COUNT = 3;
+  public final static int ANIMATION_TYPE_LOOP = 0;
+  public final static int ANIMATION_TYPE_STAY = 1;
+  public final static int ANIMATION_TYPE_VARNISH = 2;
   private ArrayList<Bitmap> mAnimationImages;
   private int mCurrentFrameIndex = 0;
-  private int mFrameCount = 0;
+  private long mFrameCount = 0;
   private Paint mPaint;
+  private int mAnimationType = ANIMATION_TYPE_LOOP;
+  private int mLateFrameSpan = 1;
 
   public FrameAnimationRenderer() {
     mAnimationImages = new ArrayList<Bitmap>();
@@ -25,16 +29,39 @@ public class FrameAnimationRenderer{
     mPaint.setFilterBitmap(true);
   }
 
+  public void setLateFrameSpan(int span){
+    mLateFrameSpan = span + 1;
+  }
+
+  public void setAnimationType(int animationType){
+    mAnimationType = animationType;
+  }
+
   public void render(Canvas canvas){
+    if(mAnimationImages.isEmpty()) return;
     if(!AssetImageLoader.getInstance(AssetImageLoader.class).IsLoaded()) return;
     ++mFrameCount;
     Bitmap frame = mAnimationImages.get(mCurrentFrameIndex);
     Rect src = new Rect(0,0,frame.getWidth(), frame.getHeight());
     RectF dst = calcScreenField(new Rect(0,0,canvas.getWidth(), canvas.getHeight()), new Rect(0,0,frame.getWidth(), frame.getHeight()));
     canvas.drawBitmap(mAnimationImages.get(mCurrentFrameIndex), src, dst, mPaint);
-    if(mFrameCount % LATE_FRAME_COUNT != 0) return;
-    if(mAnimationImages.size() - 1 > mCurrentFrameIndex) {
-      ++mCurrentFrameIndex;
+    if(mFrameCount % mLateFrameSpan != 0) return;
+    if(mAnimationType == ANIMATION_TYPE_LOOP){
+      if(mAnimationImages.size() - 1 == mCurrentFrameIndex) {
+        mCurrentFrameIndex = 0;
+      }else {
+        ++mCurrentFrameIndex;
+      }
+    }else if(mAnimationType == ANIMATION_TYPE_STAY){
+      if(mAnimationImages.size() - 1 > mCurrentFrameIndex) {
+        ++mCurrentFrameIndex;
+      }
+    }else{
+      if(mAnimationImages.size() - 1 == mCurrentFrameIndex) {
+        stopAnimation();
+      }else{
+        ++mCurrentFrameIndex;
+      }
     }
   }
 
