@@ -88,4 +88,10 @@ public class MainActivity extends Activity {
         Intent intent = new Intent(this, Camera2Activity.class);
         startActivity(intent);
     }
+
+    @OnClick(R.id.button7)
+    public void onClickButton7(View v) {
+        Intent intent = new Intent(this, JniSampleActivity.class);
+        startActivity(intent);
+    }
 }

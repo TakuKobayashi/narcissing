@@ -50,6 +50,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Camera2"/>
+
+        <Button
+            android:id="@+id/button7"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="jniSample"/>
     </LinearLayout>
 
 </RelativeLayout>
