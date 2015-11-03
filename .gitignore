@@ -34,4 +34,4 @@ proguard/
 app/build/
 build/
 captures/
-
+app/src/main/assets/
