@@ -30,6 +30,14 @@
                 <action android:name="android.intent.action.View" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".Camera2Activity"
+            android:icon="@mipmap/icon"
+            android:screenOrientation="landscape" >
+            <intent-filter>
+                <action android:name="android.intent.action.View" />
+            </intent-filter>
+        </activity>
         <activity android:name=".SoundActivity" />
         <service android:name=".VieLedIntentService" />
     </application>

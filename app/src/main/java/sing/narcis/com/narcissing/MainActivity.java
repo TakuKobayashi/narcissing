@@ -2,6 +2,7 @@ package sing.narcis.com.narcissing;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Camera;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -82,4 +83,9 @@ public class MainActivity extends Activity {
         startActivity(intent);
     }
 
+    @OnClick(R.id.button6)
+    public void onClickButton6(View v) {
+        Intent intent = new Intent(this, Camera2Activity.class);
+        startActivity(intent);
+    }
 }
