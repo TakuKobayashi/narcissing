@@ -8,6 +8,8 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.AssetFileDescriptor;
 import android.content.res.Configuration;
+import android.graphics.Canvas;
+import android.graphics.ImageFormat;
 import android.graphics.Matrix;
 import android.graphics.Point;
 import android.graphics.RectF;
@@ -19,10 +21,13 @@ import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraDevice;
 import android.hardware.camera2.CameraManager;
 import android.hardware.camera2.CaptureRequest;
+import android.hardware.camera2.CaptureResult;
 import android.hardware.camera2.params.StreamConfigurationMap;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
+import android.media.Image;
+import android.media.ImageReader;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -38,6 +43,7 @@ import android.view.WindowManager;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -52,6 +58,8 @@ public class Camera2Activity extends Activity {
     private Size mPreviewSize;
     private CaptureRequest.Builder mPreviewBuilder;
     private CameraDevice mCameraDevice;
+    private CameraCaptureSession mSession;
+    private ImageReader mReader;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -99,6 +107,12 @@ public class Camera2Activity extends Activity {
             public void onSurfaceTextureUpdated(SurfaceTexture surface) {
                 //getTimeStampは更新されたナノ秒単位の値を取得
                 Log.d(Config.DEBUG_KEY, "updated time:" + surface.getTimestamp());
+                /*
+                Surface s = new Surface(surface);
+                Canvas c = s.lockHardwareCanvas();
+                Log.d(Config.DEBUG_KEY, "updated canvas width:" + c.getWidth() + "canvas height:" + c.getHeight());
+                s.unlockCanvasAndPost(c);
+                */
             }
         });
     }
@@ -156,8 +170,14 @@ public class Camera2Activity extends Activity {
     }
 
     private void releaseCamera(){
+        if(mReader != null){
+            mReader.close();
+        }
         if(mCameraDevice != null){
             mCameraDevice.close();
+        }
+        if(mSession != null){
+            mSession.close();
         }
     }
 
@@ -197,16 +217,42 @@ public class Camera2Activity extends Activity {
                     @Override
                     public void onOpened(CameraDevice camera) {
                         mCameraDevice = camera;
+                        Log.d(Config.DEBUG_KEY, "open id:" + camera.getId());
                         SurfaceTexture texture = mPreview.getSurfaceTexture();
                         texture.setDefaultBufferSize(mPreviewSize.getWidth(), mPreviewSize.getHeight());
                         Surface surface = new Surface(texture);
+                        HandlerThread thread = new HandlerThread("CameraReader");
+                        thread.start();
+                        Handler backgroundHandler = new Handler(thread.getLooper());
+
+                        mReader = ImageReader.newInstance(mPreviewSize.getWidth(), mPreviewSize.getHeight(), ImageFormat.YUV_420_888, 1);
+                        mReader.setOnImageAvailableListener(new ImageReader.OnImageAvailableListener() {
+                            @Override
+                            public void onImageAvailable(ImageReader reader) {
+                                Image image = reader.acquireLatestImage();
+                                Log.d(Config.DEBUG_KEY, "width:" + image.getWidth() + " height:" + image.getHeight());
+                                Image.Plane[] planes = image.getPlanes();
+                                for(Image.Plane plane : planes){
+                                    ByteBuffer buffer = plane.getBuffer();
+                                    Log.d(Config.DEBUG_KEY, "cap:" + buffer.capacity());
+                                    byte[] bytes = new byte[buffer.capacity()];
+                                    buffer.get(bytes);
+                                    Log.d(Config.DEBUG_KEY, "length:" + bytes.length);
+                                }
+                                image.close();
+                            }
+                        }, null);
                         try {
                             mPreviewBuilder = camera.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
                             mPreviewBuilder.addTarget(surface);
-                            camera.createCaptureSession(Arrays.asList(surface), new CameraCaptureSession.StateCallback() {
+                            //加えないと流れてこない
+                            mPreviewBuilder.addTarget(mReader.getSurface());
+                            camera.createCaptureSession(Arrays.asList(surface, mReader.getSurface()), new CameraCaptureSession.StateCallback() {
 
                                 @Override
                                 public void onConfigured(CameraCaptureSession session) {
+                                    mSession = session;
+                                    Log.d(Config.DEBUG_KEY, "configured id:" + session.getDevice().getId());
                                     // オートフォーカスモードに設定する.
                                     mPreviewBuilder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
                                     // 別スレッドで実行.
@@ -216,9 +262,23 @@ public class Camera2Activity extends Activity {
 
                                     try {
                                         // 画像を繰り返し取得してTextureViewに表示する.
-                                        session.setRepeatingRequest(mPreviewBuilder.build(), null, backgroundHandler);
+                                        session.setRepeatingRequest(mPreviewBuilder.build(), new CameraCaptureSession.CaptureCallback() {
+                                            @Override
+                                            public void onCaptureStarted(CameraCaptureSession session, CaptureRequest request, long timestamp, long frameNumber) {
+                                                super.onCaptureStarted(session, request, timestamp, frameNumber);
+                                                //Log.d(Config.DEBUG_KEY, "session:" + session + " request:" + request.getKeys() + " time:" + timestamp + " frame:" + frameNumber);
+                                            }
+
+                                            //毎フレーム呼ばれる
+                                            @Override
+                                            public void onCaptureProgressed(CameraCaptureSession session, CaptureRequest request, CaptureResult partialResult) {
+                                                super.onCaptureProgressed(session, request, partialResult);
+                                                Log.d(Config.DEBUG_KEY, "session:" + session + " request:" + request + " id:" + session.getDevice().getId());
+                                            }
+                                        }, backgroundHandler);
                                     } catch (CameraAccessException e) {
                                         e.printStackTrace();
+                                        Log.d(Config.DEBUG_KEY, "error2:" + e.getMessage());
                                     }
                                 }
 
@@ -229,6 +289,7 @@ public class Camera2Activity extends Activity {
                             }, null);
                         } catch (CameraAccessException e) {
                             e.printStackTrace();
+                            Log.d(Config.DEBUG_KEY, "error1:" + e.getMessage());
                         }
                     }
 
