@@ -51,6 +51,8 @@ public class JniSampleActivity extends Activity {
         ImageView after = (ImageView) findViewById(R.id.after);
         after.setImageBitmap(subbmp);
 
+        mCameraDecodeView = (ImageView) findViewById(R.id.camera_decode_view);
+
         RelativeLayout layout = (RelativeLayout) findViewById(R.id.sampleLayout);
         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
         layoutParams.addRule(RelativeLayout.BELOW, R.id.spacer);
@@ -59,6 +61,18 @@ public class JniSampleActivity extends Activity {
         preview.setLayoutParams(layoutParams);
         layout.addView(preview);
     }
+
+    private Camera.PreviewCallback mPreviewCallback = new Camera.PreviewCallback(){
+
+        @Override
+        public void onPreviewFrame(byte[] data, Camera camera) {
+            Camera.Size previewSize = camera.getParameters().getPreviewSize();
+            int[] decoded = decodeYUV420SP(data, previewSize.width, previewSize.height);
+            Bitmap bitmap = Bitmap.createBitmap(decoded, previewSize.width, previewSize.height, Bitmap.Config.ARGB_8888);
+            mCameraDecodeView.setImageBitmap(bitmap);
+            decoded = null;
+        }
+    };
 
     private View setupCamera(){
         if(Build.VERSION.SDK_INT >= 14) {
@@ -70,10 +84,7 @@ public class JniSampleActivity extends Activity {
                     try {
                         mCamera = Camera.open(); // attempt to get a Camera instance
                         mCamera.setPreviewTexture(surface);
-                        mCamera.stopPreview();
-                        //今回はフロントカメラのみなのでCameraIdは0のみ使う
-                        mCamera.setDisplayOrientation(ApplicationHelper.getCameraDisplayOrientation(JniSampleActivity.this, 0));
-                        mCamera.startPreview();
+                        setupCameraParams(mCamera);
                     } catch (Exception e) {
                         // Camera is not available (in use or does not exist)
                         e.printStackTrace();
@@ -134,18 +145,25 @@ public class JniSampleActivity extends Activity {
             if(Build.VERSION.SDK_INT < 11){
                 holder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
             }
+            mCamera.setPreviewCallback(mPreviewCallback);
             try {
                 mCamera.setPreviewDisplay(holder);
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            mCamera.stopPreview();
-            //今回はフロントカメラのみなのでCameraIdは0のみ使う
-            mCamera.setDisplayOrientation(ApplicationHelper.getCameraDisplayOrientation(this, 0));
-            mCamera.startPreview();
+            setupCameraParams(mCamera);
             mPreview = surefaceView;
             return surefaceView;
         }
+    }
+
+    private void setupCameraParams(Camera camera){
+        camera.setPreviewCallback(mPreviewCallback);
+        Camera.Parameters cp = camera.getParameters();
+        //今回はフロントカメラのみなのでCameraIdは0のみ使う
+        camera.setDisplayOrientation(ApplicationHelper.getCameraDisplayOrientation(this, 0));
+        camera.setParameters(cp);
+        camera.startPreview();
     }
 
     private void releaseCamera(){
@@ -169,12 +187,14 @@ public class JniSampleActivity extends Activity {
     }
 
     private native int[] convert(int[] pixcels,int width, int height);
+    private native int[] decodeYUV420SP(byte[] yuv,int width, int height);
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        releaseCamera();
         ApplicationHelper.releaseImageView((ImageView) findViewById(R.id.before));
         ApplicationHelper.releaseImageView((ImageView) findViewById(R.id.after));
-        releaseCamera();
+        ApplicationHelper.releaseImageView(mCameraDecodeView);
     }
 }
