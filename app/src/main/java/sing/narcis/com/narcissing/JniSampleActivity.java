@@ -15,6 +15,7 @@ import android.view.TextureView;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 import java.io.IOException;
 
@@ -25,6 +26,7 @@ public class JniSampleActivity extends Activity {
 
     private Camera mCamera;
     private View mPreview;
+    private ImageView mCameraDecodeView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,8 +50,14 @@ public class JniSampleActivity extends Activity {
 
         ImageView after = (ImageView) findViewById(R.id.after);
         after.setImageBitmap(subbmp);
-        LinearLayout layout = (LinearLayout) findViewById(R.id.imageLayout);
-        layout.addView(setupCamera());
+
+        RelativeLayout layout = (RelativeLayout) findViewById(R.id.sampleLayout);
+        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+        layoutParams.addRule(RelativeLayout.BELOW, R.id.spacer);
+        layoutParams.addRule(RelativeLayout.LEFT_OF, R.id.spacer);
+        View preview = setupCamera();
+        preview.setLayoutParams(layoutParams);
+        layout.addView(preview);
     }
 
     private View setupCamera(){
