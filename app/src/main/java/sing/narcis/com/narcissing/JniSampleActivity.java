@@ -13,9 +13,14 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.TextureView;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.SeekBar;
+import android.widget.TextView;
 
 import java.io.IOException;
 
@@ -28,38 +33,90 @@ public class JniSampleActivity extends Activity {
     private View mPreview;
     private ImageView mCameraDecodeView;
 
+    private native int[] convert(int[] pixcels,int width, int height);
+    private native int[] grayscale(int[] pixcels,int width, int height,int value);
+    private native int[] decodeYUV420SP(byte[] yuv,int width, int height);
+    private Bitmap mOrigin;
+    private VerticalSeekBar mVerticalSeekBar;
+    private TextView mSeekbarValue;
+    private int currentPosition;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.jni_sample);
 
-        Bitmap origin = BitmapFactory.decodeResource(getResources(), R.mipmap.jni_sample);
-        Bitmap subbmp = origin.copy(Bitmap.Config.ARGB_8888, true);
+        mOrigin = BitmapFactory.decodeResource(getResources(), R.mipmap.jni_sample);
 
-        int width = subbmp.getWidth();
-        int height = subbmp.getHeight();
+        ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1);
 
-        int pixels[] = new int[width * height];
-        int cnt = 0;
-        subbmp.getPixels(pixels, 0, width, 0, 0, width, height);
-        pixels = convert(pixels, width, height);
-        subbmp.setPixels(pixels, 0, width, 0, 0, width, height);
+        String[] array_str = getResources().getStringArray(R.array.filter_names);
+        for(String s : array_str){
+            adapter.add(s);
+        }
+        GridView grid = (GridView)findViewById(R.id.filterGrid);
+        grid.setNumColumns(adapter.getCount());
+        grid.setAdapter(adapter);
+        grid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                currentPosition = position;
+                filter(currentPosition);
+            }
+        });
 
         ImageView before = (ImageView) findViewById(R.id.before);
-        before.setImageBitmap(origin);
+        before.setImageBitmap(mOrigin);
 
-        ImageView after = (ImageView) findViewById(R.id.after);
-        after.setImageBitmap(subbmp);
+        mSeekbarValue = (TextView) findViewById(R.id.seekBarValue);
+
+        mVerticalSeekBar = (VerticalSeekBar) findViewById(R.id.VerticalSeekBar);
+        mVerticalSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                mSeekbarValue.setText(String.valueOf(progress));
+                filter(currentPosition);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+            }
+        });
+        mSeekbarValue.setText(String.valueOf(mVerticalSeekBar.getProgress()));
 
         mCameraDecodeView = (ImageView) findViewById(R.id.camera_decode_view);
 
         RelativeLayout layout = (RelativeLayout) findViewById(R.id.sampleLayout);
         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-        layoutParams.addRule(RelativeLayout.BELOW, R.id.spacer);
+        layoutParams.addRule(RelativeLayout.BELOW, R.id.filterGrid);
         layoutParams.addRule(RelativeLayout.LEFT_OF, R.id.spacer);
         View preview = setupCamera();
         preview.setLayoutParams(layoutParams);
         layout.addView(preview);
+        filter(currentPosition);
+    }
+
+    private void filter(int position){
+
+        Bitmap subbmp = mOrigin.copy(Bitmap.Config.ARGB_8888, true);
+        int width = subbmp.getWidth();
+        int height = subbmp.getHeight();
+
+        int[] pixels = new int[width * height];
+        subbmp.getPixels(pixels, 0, width, 0, 0, width, height);
+        if(position == 0){
+            pixels = grayscale(pixels, width, height, Math.max(mVerticalSeekBar.getProgress(), 1));
+        }
+        pixels = convert(pixels, width, height);
+        subbmp.setPixels(pixels, 0, width, 0, 0, width, height);
+        ImageView after = (ImageView) findViewById(R.id.after);
+        after.setImageBitmap(subbmp);
+        pixels = null;
     }
 
     private Camera.PreviewCallback mPreviewCallback = new Camera.PreviewCallback(){
@@ -185,9 +242,6 @@ public class JniSampleActivity extends Activity {
     protected void onPause() {
         super.onPause();
     }
-
-    private native int[] convert(int[] pixcels,int width, int height);
-    private native int[] decodeYUV420SP(byte[] yuv,int width, int height);
 
     @Override
     protected void onDestroy() {

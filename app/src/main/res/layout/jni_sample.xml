@@ -16,7 +16,6 @@
         android:id="@+id/before"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="16dp"
         android:layout_toLeftOf="@+id/spacer"
         android:layout_above="@+id/spacer" />
 
@@ -24,9 +23,32 @@
         android:id="@+id/after"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="16dp"
         android:layout_toRightOf="@+id/spacer"
         android:layout_above="@+id/spacer"
+        />
+
+    <TextView
+        android:id="@+id/seekBarValue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"/>
+
+    <sing.narcis.com.narcissing.VerticalSeekBar
+        android:id="@+id/VerticalSeekBar"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/seekBarValue"
+        android:layout_above="@+id/spacer"
+        android:layout_alignParentRight="true"
+        android:max="256"
+        />
+
+    <GridView
+        android:id="@+id/filterGrid"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/spacer"
         />
 
     <ImageView
@@ -34,7 +56,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@+id/spacer"
-        android:layout_below="@+id/spacer"
+        android:layout_below="@+id/filterGrid"
         />
 
 </RelativeLayout>
