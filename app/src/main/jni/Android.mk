@@ -19,5 +19,6 @@ include $(CLEAR_VARS)
 LOCAL_MODULE    := jni_sample
 LOCAL_SRC_FILES := jni_sample.cpp
 LOCAL_LDLIBS := -llog
+LOCAL_CFLAGS := -std=gnu++11
 
 include $(BUILD_SHARED_LIBRARY)
