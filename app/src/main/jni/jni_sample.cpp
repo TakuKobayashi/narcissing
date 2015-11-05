@@ -1,6 +1,7 @@
 #include <jni.h>
 #include <string.h>
 #include <android/log.h>
+#include "FFT4g.h"
 
 extern "C" {
 JNIEXPORT jstring JNICALL Java_com_taku_kobayashi_jnisample_MainActivity_hello(JNIEnv *env,
@@ -65,5 +66,13 @@ JNIEXPORT jintArray JNICALL Java_sing_narcis_com_narcissing_JniSampleActivity_de
     env->ReleaseByteArrayElements(yuv420sp, yuv420, 0);
     env->ReleaseIntArrayElements(r, narr, 0);
     return r;
+}
+JNIEXPORT void JNICALL Java_sing_narcis_com_narcissing_AudioRecordThread_FFTrdft(
+        JNIEnv *env, jobject obj, jint size, jint isgn, jdoubleArray fft_data) {
+    jdoubleArray fft_doubles = env->NewDoubleArray(size);
+    jdouble *darr = env->GetDoubleArrayElements(fft_data, 0);
+    FFT4g *fft4g = new FFT4g(sizeof(fft_doubles));
+    fft4g->rdft(isgn, darr);
+    env->ReleaseDoubleArrayElements(fft_doubles, darr, 0);
 }
 }

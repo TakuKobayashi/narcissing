@@ -1,8 +1,8 @@
 #include "FFT4g.h"
 #include <math.h>
 
-FFT4g::FFT4g(int n) {
-    n = n;
+FFT4g::FFT4g(int size) {
+    n = size;
     ip[2+(int)sqrt((double)n/2.0)+1];
     w[n/2];
     ip[0] = 0;
@@ -29,7 +29,8 @@ max_i = i / 2;
 //音量が最大の周波数と，その音量を表示
 Log.d("fft","周波数："+ resol * max_i+" [Hz] 音量：" +  max_db+" [dB]");*/
 
-void rdft(int isgn, double a[]) {
+//第一引数は、1の場合Fourier 変換で、-1にするとFourier 逆変換となる。
+void FFT4g::rdft(int isgn, double a[]) {
     int nw, nc;
     double xi;
 
@@ -67,7 +68,7 @@ void rdft(int isgn, double a[]) {
     }
 }
 
-void makewt(int nw){
+void FFT4g::makewt(int nw){
     int j, nwh;
     double delta, x, y;
 
@@ -94,7 +95,7 @@ void makewt(int nw){
     }
 }
 
-void makect(int nc, double[] c, int nw){
+void FFT4g::makect(int nc, double c[], int nw){
     int j, nch;
     double delta;
 
@@ -113,7 +114,7 @@ void makect(int nc, double[] c, int nw){
 
 /* -------- child routines -------- */
 
-void bitrv2(int n, double[] a) {
+void FFT4g::bitrv2(int n, double a[]) {
     int j, j1, k, k1, l, m, m2;
     double xr, xi, yr, yi;
 
@@ -211,7 +212,7 @@ void bitrv2(int n, double[] a) {
     }
 }
 
-void rftfsub(double a[], int nc, double c[], int nw){
+void FFT4g::rftfsub(double a[], int nc, double c[], int nw){
     int j, k, kk, ks, m;
     double wkr, wki, xr, xi, yr, yi;
 
@@ -234,7 +235,7 @@ void rftfsub(double a[], int nc, double c[], int nw){
     }
 }
 
-void rftbsub(double a[], int nc, double c[], int nw){
+void FFT4g::rftbsub(double a[], int nc, double c[], int nw){
     int j, k, kk, ks, m;
     double wkr, wki, xr, xi, yr, yi;
 
@@ -259,7 +260,7 @@ void rftbsub(double a[], int nc, double c[], int nw){
     a[m + 1] = -a[m + 1];
 }
 
-void cftfsub(double a[]){
+void FFT4g::cftfsub(double a[]){
     int j, j1, j2, j3, l;
     double x0r, x0i, x1r, x1i, x2r, x2i, x3r, x3i;
 
@@ -307,7 +308,7 @@ void cftfsub(double a[]){
     }
 }
 
-void cftbsub(double a[]){
+void FFT4g::cftbsub(double a[]){
     int j, j1, j2, j3, l;
     double x0r, x0i, x1r, x1i, x2r, x2i, x3r, x3i;
 
@@ -355,7 +356,7 @@ void cftbsub(double a[]){
     }
 }
 
-void cft1st(double a[]){
+void FFT4g::cft1st(double a[]){
     int j, k1, k2;
     double wk1r, wk1i, wk2r, wk2i, wk3r, wk3i;
     double x0r, x0i, x1r, x1i, x2r, x2i, x3r, x3i;
@@ -458,7 +459,7 @@ void cft1st(double a[]){
     }
 }
 
-void cftmdl(int l, double a[]){
+void FFT4g::cftmdl(int l, double a[]){
     int j, j1, j2, j3, k, k1, k2, m, m2;
     double wk1r, wk1i, wk2r, wk2i, wk3r, wk3i;
     double x0r, x0i, x1r, x1i, x2r, x2i, x3r, x3i;
