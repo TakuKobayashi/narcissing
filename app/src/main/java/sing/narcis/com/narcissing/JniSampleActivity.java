@@ -39,6 +39,7 @@ public class JniSampleActivity extends Activity {
     private native int[] convert(int[] pixcels,int width, int height);
     private native int[] grayscale(int[] pixcels,int width, int height,int value);
     private native int[] decodeYUV420SP(byte[] yuv,int width, int height);
+    private native int[] mosaic(int[] pixcels,int width, int height,int dot);
     private Bitmap mOrigin;
     private VerticalSeekBar mVerticalSeekBar;
     private TextView mSeekbarValue;
@@ -143,6 +144,8 @@ public class JniSampleActivity extends Activity {
         subbmp.getPixels(pixels, 0, width, 0, 0, width, height);
         if(position == 0){
             pixels = grayscale(pixels, width, height, Math.max(mVerticalSeekBar.getProgress(), 1));
+        }else if(position == 1){
+            pixels = mosaic(pixels, width, height, Math.max(mVerticalSeekBar.getProgress(), 1));
         }
         pixels = convert(pixels, width, height);
         subbmp.setPixels(pixels, 0, width, 0, 0, width, height);

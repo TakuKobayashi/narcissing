@@ -36,11 +36,11 @@ JNIEXPORT jintArray JNICALL Java_sing_narcis_com_narcissing_JniSampleActivity_co
 }
 
 JNIEXPORT jintArray JNICALL Java_sing_narcis_com_narcissing_JniSampleActivity_grayscale(JNIEnv *env,
-                                                                                      jobject obj,
-                                                                                      jintArray src,
-                                                                                      jint width,
-                                                                                      jint height,
-                                                                                      jint value) {
+                                                                                        jobject obj,
+                                                                                        jintArray src,
+                                                                                        jint width,
+                                                                                        jint height,
+                                                                                        jint value) {
     jint *arr = env->GetIntArrayElements(src, 0);
     int totalPixel = width * height;
     jintArray r = env->NewIntArray(totalPixel);
@@ -51,12 +51,12 @@ JNIEXPORT jintArray JNICALL Java_sing_narcis_com_narcissing_JniSampleActivity_gr
         int green = (arr[i] & 0x0000FF00) >> 8;
         int blue = (arr[i] & 0x000000FF);
         //ここに計算処理を色々と書く。
-        int gray = (int)(0.298912 * blue + 0.586611 * green + 0.114478 * red);
+        int gray = (int) (0.298912 * blue + 0.586611 * green + 0.114478 * red);
         int nSep = gray / value;
         int v;
-        if(value != 1 && 128 <= nSep * value){
+        if (value != 1 && 128 <= nSep * value) {
             v = std::min((nSep + 1) * value, 256);
-        }else{
+        } else {
             v = nSep * value;
         }
         narr[i] = (alpha << 24) | (v << 16) | (v << 8) | v;
@@ -106,5 +106,49 @@ JNIEXPORT void JNICALL Java_sing_narcis_com_narcissing_AudioRecordThread_FFTrdft
     FFT4g *fft4g = new FFT4g(sizeof(fft_doubles));
     fft4g->rdft(isgn, darr);
     env->ReleaseDoubleArrayElements(fft_doubles, darr, 0);
+}
+
+JNIEXPORT jintArray JNICALL Java_sing_narcis_com_narcissing_JniSampleActivity_mosaic(JNIEnv *env,
+                                                                                     jobject obj,
+                                                                                     jintArray src,
+                                                                                     jint width,
+                                                                                     jint height,
+                                                                                     jint dot) {
+    jint *arr = env->GetIntArrayElements(src, 0);
+    int square = dot * dot;
+    jintArray r = env->NewIntArray(width * height);
+    jint *narr = env->GetIntArrayElements(r, 0);
+    for (int w = 0, widthEnd = width / dot; w < widthEnd; w++) {
+        for (int h = 0, heightEnd = height / dot; h < heightEnd; h++) {
+            // ドットの中の平均値を使う
+            int alpha = 0;
+            int red = 0;
+            int green = 0;
+            int blue = 0;
+            int moveX = w * dot;
+            int moveY = h * dot;
+            for (int dw = 0; dw < dot; dw++) {
+                for (int dh = 0; dh < dot; dh++) {
+                    int dotColor = arr[moveX + dw + (moveY + dh) * width];
+                    alpha = alpha + (dotColor & 0xFF000000) >> 24;
+                    red = red + (dotColor & 0x00FF0000) >> 16;
+                    green = green + (dotColor & 0x0000FF00) >> 8;
+                    blue = blue + (dotColor & 0x000000FF);
+                }
+            }
+            alpha = alpha / square;
+            red = red / square;
+            green = green / square;
+            blue = blue / square;
+            for (int dw = 0; dw < dot; dw++) {
+                for (int dh = 0; dh < dot; dh++) {
+                    narr[moveX + dw + (moveY + dh) * width] = (alpha << 24) | (red << 16) | (green << 8) | blue;
+                }
+            }
+        }
+    }
+    env->ReleaseIntArrayElements(src, arr, 0);
+    env->ReleaseIntArrayElements(r, narr, 0);
+    return r;
 }
 }
