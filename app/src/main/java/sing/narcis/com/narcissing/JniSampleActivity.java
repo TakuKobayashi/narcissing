@@ -147,7 +147,6 @@ public class JniSampleActivity extends Activity {
         }else if(position == 1){
             pixels = mosaic(pixels, width, height, Math.max(mVerticalSeekBar.getProgress(), 1));
         }
-        pixels = convert(pixels, width, height);
         subbmp.setPixels(pixels, 0, width, 0, 0, width, height);
         ImageView after = (ImageView) findViewById(R.id.after);
         after.setImageBitmap(subbmp);

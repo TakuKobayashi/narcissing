@@ -130,9 +130,9 @@ JNIEXPORT jintArray JNICALL Java_sing_narcis_com_narcissing_JniSampleActivity_mo
             for (int dw = 0; dw < dot; dw++) {
                 for (int dh = 0; dh < dot; dh++) {
                     int dotColor = arr[moveX + dw + (moveY + dh) * width];
-                    alpha = alpha + (dotColor & 0xFF000000) >> 24;
-                    red = red + (dotColor & 0x00FF0000) >> 16;
-                    green = green + (dotColor & 0x0000FF00) >> 8;
+                    alpha = alpha + ((dotColor & 0xFF000000) >> 24);
+                    red = red + ((dotColor & 0x00FF0000) >> 16);
+                    green = green + ((dotColor & 0x0000FF00) >> 8);
                     blue = blue + (dotColor & 0x000000FF);
                 }
             }
