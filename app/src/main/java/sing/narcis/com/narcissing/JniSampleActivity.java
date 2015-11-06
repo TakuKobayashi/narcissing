@@ -1,6 +1,7 @@
 package sing.narcis.com.narcissing;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.SurfaceTexture;
@@ -23,6 +24,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import java.io.IOException;
+import java.io.InputStream;
 
 public class JniSampleActivity extends Activity {
     static {
@@ -32,6 +34,7 @@ public class JniSampleActivity extends Activity {
     private Camera mCamera;
     private View mPreview;
     private ImageView mCameraDecodeView;
+    private static final int REQUEST_GALLERY = 1;
 
     private native int[] convert(int[] pixcels,int width, int height);
     private native int[] grayscale(int[] pixcels,int width, int height,int value);
@@ -67,6 +70,16 @@ public class JniSampleActivity extends Activity {
 
         ImageView before = (ImageView) findViewById(R.id.before);
         before.setImageBitmap(mOrigin);
+        before.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // ギャラリー呼び出し
+                Intent intent = new Intent();
+                intent.setType("image/*");
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+                startActivityForResult(intent, REQUEST_GALLERY);
+            }
+        });
 
         mSeekbarValue = (TextView) findViewById(R.id.seekBarValue);
 
@@ -99,6 +112,25 @@ public class JniSampleActivity extends Activity {
         preview.setLayoutParams(layoutParams);
         layout.addView(preview);
         filter(currentPosition);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == REQUEST_GALLERY && resultCode == RESULT_OK) {
+            mOrigin.recycle();
+            mOrigin = null;
+            try {
+                InputStream in = getContentResolver().openInputStream(data.getData());
+                mOrigin = BitmapFactory.decodeStream(in);
+                in.close();
+                ImageView before = (ImageView) findViewById(R.id.before);
+                before.setImageBitmap(mOrigin);
+                filter(currentPosition);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private void filter(int position){

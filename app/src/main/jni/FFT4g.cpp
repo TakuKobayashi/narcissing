@@ -10,24 +10,9 @@ FFT4g::FFT4g(int size) {
 
 FFT4g::~FFT4g()
 {
+    delete(w);
+    delete(ip);
 }
-
-/*
-// デシベルの計算
-double[] dbfs = new double[FFT_SIZE / 2];
-double max_db = -120d;
-int max_i = 0;
-for (int i = 0; i < FFT_SIZE; i += 2) {
-dbfs[i / 2] = (int) (20 * Math.log10(Math.sqrt(Math
-.pow(FFTdata[i], 2)
-+ Math.pow(FFTdata[i + 1], 2)) / dB_baseline));
-if (max_db < dbfs[i / 2]) {
-max_db = dbfs[i / 2];
-max_i = i / 2;
-}
-}
-//音量が最大の周波数と，その音量を表示
-Log.d("fft","周波数："+ resol * max_i+" [Hz] 音量：" +  max_db+" [dB]");*/
 
 //第一引数は、1の場合Fourier 変換で、-1にするとFourier 逆変換となる。
 void FFT4g::rdft(int isgn, double a[]) {
