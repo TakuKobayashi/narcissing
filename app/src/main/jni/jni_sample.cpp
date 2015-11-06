@@ -1,6 +1,7 @@
 #include <jni.h>
 #include <string.h>
 #include <android/log.h>
+#include <algorithm>
 #include "FFT4g.h"
 
 extern "C" {
@@ -51,7 +52,13 @@ JNIEXPORT jintArray JNICALL Java_sing_narcis_com_narcissing_JniSampleActivity_gr
         int blue = (arr[i] & 0x000000FF);
         //ここに計算処理を色々と書く。
         int gray = (int)(0.298912 * blue + 0.586611 * green + 0.114478 * red);
-        int v = (gray / value) * value;
+        int nSep = gray / value;
+        int v;
+        if(value != 1 && 128 <= nSep * value){
+            v = std::min((nSep + 1) * value, 256);
+        }else{
+            v = nSep * value;
+        }
         narr[i] = (alpha << 24) | (v << 16) | (v << 8) | v;
     }
     env->ReleaseIntArrayElements(src, arr, 0);
