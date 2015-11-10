@@ -44,13 +44,31 @@
         android:max="256"
         />
 
+    <sing.narcis.com.narcissing.FaceOverlayImageView
+        android:id="@+id/faceImage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toLeftOf="@+id/spacer"
+        android:layout_below="@+id/spacer"
+        android:layout_above="@+id/filterGrid"
+        />
+
+    <ImageView
+        android:id="@+id/faceClipImage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/spacer"
+        android:layout_below="@+id/spacer"
+        android:layout_above="@+id/filterGrid"
+        />
+
     <GridView
         android:id="@+id/filterGrid"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/spacer"
+        android:layout_alignParentBottom="true"
         />
-
+<!--
     <ImageView
         android:id="@+id/camera_decode_view"
         android:layout_width="wrap_content"
@@ -58,5 +76,5 @@
         android:layout_toRightOf="@+id/spacer"
         android:layout_below="@+id/filterGrid"
         />
-
+-->
 </RelativeLayout>

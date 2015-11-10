@@ -33,7 +33,7 @@ public class JniSampleActivity extends Activity {
 
     private Camera mCamera;
     private View mPreview;
-    private ImageView mCameraDecodeView;
+    //private ImageView mCameraDecodeView;
     private static final int REQUEST_GALLERY = 1;
 
     private native int[] convert(int[] pixcels,int width, int height);
@@ -44,13 +44,14 @@ public class JniSampleActivity extends Activity {
     private VerticalSeekBar mVerticalSeekBar;
     private TextView mSeekbarValue;
     private int currentPosition;
+    private FaceOverlayImageView mFaceImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.jni_sample);
 
-        mOrigin = BitmapFactory.decodeResource(getResources(), R.mipmap.jni_sample);
+        mOrigin = BitmapFactory.decodeResource(getResources(), R.mipmap.face_sample);
 
         ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1);
 
@@ -103,15 +104,17 @@ public class JniSampleActivity extends Activity {
         });
         mSeekbarValue.setText(String.valueOf(mVerticalSeekBar.getProgress()));
 
-        mCameraDecodeView = (ImageView) findViewById(R.id.camera_decode_view);
+        mFaceImage = (FaceOverlayImageView) findViewById(R.id.faceImage);
+        mFaceImage.faceRecognize(mOrigin);
+        //mCameraDecodeView = (ImageView) findViewById(R.id.camera_decode_view);
 
-        RelativeLayout layout = (RelativeLayout) findViewById(R.id.sampleLayout);
-        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-        layoutParams.addRule(RelativeLayout.BELOW, R.id.filterGrid);
-        layoutParams.addRule(RelativeLayout.LEFT_OF, R.id.spacer);
-        View preview = setupCamera();
-        preview.setLayoutParams(layoutParams);
-        layout.addView(preview);
+        //RelativeLayout layout = (RelativeLayout) findViewById(R.id.sampleLayout);
+        //RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+        //layoutParams.addRule(RelativeLayout.BELOW, R.id.filterGrid);
+        //layoutParams.addRule(RelativeLayout.LEFT_OF, R.id.spacer);
+        //View preview = setupCamera();
+        //preview.setLayoutParams(layoutParams);
+        //layout.addView(preview);
         filter(currentPosition);
     }
 
@@ -160,7 +163,7 @@ public class JniSampleActivity extends Activity {
             Camera.Size previewSize = camera.getParameters().getPreviewSize();
             int[] decoded = decodeYUV420SP(data, previewSize.width, previewSize.height);
             Bitmap bitmap = Bitmap.createBitmap(decoded, previewSize.width, previewSize.height, Bitmap.Config.ARGB_8888);
-            mCameraDecodeView.setImageBitmap(bitmap);
+            //mCameraDecodeView.setImageBitmap(bitmap);
             decoded = null;
         }
     };
@@ -283,6 +286,7 @@ public class JniSampleActivity extends Activity {
         releaseCamera();
         ApplicationHelper.releaseImageView((ImageView) findViewById(R.id.before));
         ApplicationHelper.releaseImageView((ImageView) findViewById(R.id.after));
-        ApplicationHelper.releaseImageView(mCameraDecodeView);
+        ApplicationHelper.releaseImageView(mFaceImage);
+        //ApplicationHelper.releaseImageView(mCameraDecodeView);
     }
 }
