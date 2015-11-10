@@ -18,6 +18,8 @@ public class FaceOverlayImageView extends ImageView {
   private HashMap<String, RectF> mCaptured;
   private Paint mPaint;
 
+  private native int[] facedetect(int[] pixcels,int width, int height);
+
   public FaceOverlayImageView(Context context) {
     super(context);
     setup();
@@ -64,6 +66,8 @@ public class FaceOverlayImageView extends ImageView {
 
     int[] pixels = new int[width * height];
     bitmap.getPixels(pixels, 0, width, 0, 0, width, height);
+    int[] result = facedetect(pixels, width, height);
+    result = null;
 
     setImageBitmap(bitmap);
     this.invalidate();
