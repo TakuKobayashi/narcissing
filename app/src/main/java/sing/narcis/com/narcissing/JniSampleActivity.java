@@ -8,6 +8,7 @@ import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutCompat;
 import android.util.Log;
 import android.view.SurfaceHolder;
@@ -53,20 +54,29 @@ public class JniSampleActivity extends Activity {
 
         mOrigin = BitmapFactory.decodeResource(getResources(), R.mipmap.face_sample);
 
-        ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1);
+        FilterPagerAdapter adapter = new FilterPagerAdapter(this);
 
         String[] array_str = getResources().getStringArray(R.array.filter_names);
         for(String s : array_str){
             adapter.add(s);
         }
-        GridView grid = (GridView)findViewById(R.id.filterGrid);
-        grid.setNumColumns(adapter.getCount());
-        grid.setAdapter(adapter);
-        grid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        ViewPager pager = (ViewPager)findViewById(R.id.filterPager);
+        pager.setAdapter(adapter);
+        pager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
                 currentPosition = position;
                 filter(currentPosition);
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
             }
         });
 
