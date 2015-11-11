@@ -47,6 +47,8 @@ public class JniSampleActivity extends Activity {
     private native int[] approximateColor(int[] pixcels,int width, int height,int targetColor, int threshold);
     private native int[] noiseRemove(int[] pixcels,int width, int height);
     private native int[] negative(int[] pixcels,int width, int height);
+    private native int[] brightness(int[] pixcels,int width, int height);
+
 
     private Bitmap mOrigin;
     private VerticalSeekBar mVerticalSeekBar;
@@ -198,8 +200,10 @@ public class JniSampleActivity extends Activity {
             mSelectPixelInfo.setText("x:" + (int)mTargetPoint.x + " y:" + (int)mTargetPoint.y+ " a:" + Color.alpha(targetColor)+ " r:" +Color.red(targetColor)+ " g:"+Color.green(targetColor)+" b:" + Color.blue(targetColor));
             pixels = approximateColor(pixels, width, height, targetColor, Math.max(mVerticalSeekBar.getProgress(), 1));
         }else if(position == 3){
-            pixels = noiseRemove(pixels, width, height);
+            pixels = brightness(pixels, width, height);
         }else if(position == 4){
+            pixels = noiseRemove(pixels, width, height);
+        }else if(position == 5){
             pixels = negative(pixels, width, height);
         }
         subbmp.setPixels(pixels, 0, width, 0, 0, width, height);

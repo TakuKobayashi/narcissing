@@ -4,14 +4,13 @@
         <item>グレースケール</item>
         <item>モザイク</item>
         <item>色近似</item>
+        <item>画像の明るさ(レベル)を補正</item>
         <item>メディアンフィルタで画像のノイズを除去</item>
         <item>ネガ</item>
         <item>色の階調数を落とす(ポスタリゼーション)</item>
-        <item>画像の明るさ(レベル)を補正</item>
         <item>ガウスぼかし</item>
         <item>2値化(誤差拡散法)</item>
         <item>2値化(P-タイル法)</item>
         <item>リフレクト</item>
-
     </string-array>
 </resources>

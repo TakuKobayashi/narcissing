@@ -248,6 +248,53 @@ JNIEXPORT jintArray JNICALL Java_sing_narcis_com_narcissing_JniSampleActivity_ne
     return r;
 }
 
+JNIEXPORT jintArray JNICALL Java_sing_narcis_com_narcissing_JniSampleActivity_brightness(JNIEnv *env,
+                                                                                       jobject obj,
+                                                                                       jintArray src,
+                                                                                       jint width,
+                                                                                       jint height) {
+    jint *arr = env->GetIntArrayElements(src, 0);
+    int totalPixel = width * height;
+    jintArray r = env->NewIntArray(totalPixel);
+    jint *narr = env->GetIntArrayElements(r, 0);
+    int min = 128;
+    int max = 128;
+    //まずはグレースケール化して明るさを出す
+    for (int i = 0; i < totalPixel; ++i) {
+        int alpha = (arr[i] & 0xFF000000) >> 24;
+        int red = (arr[i] & 0x00FF0000) >> 16;
+        int green = (arr[i] & 0x0000FF00) >> 8;
+        int blue = (arr[i] & 0x000000FF);
+        int gray = (int) (0.298912 * blue + 0.586611 * green + 0.114478 * red);
+        if(gray < min){
+            min = gray;
+        }
+        if(gray > max){
+            max = gray;
+        }
+    }
+    int table[256];
+    for(int i = 0; i < 256; ++i) {
+        int value = i;
+        if (value < min) value = min;
+        if (value > max) value = max;
+        table[i] = (int)((float)(value - min) / (max - min) * 255);
+    }
+
+    for (int i = 0; i < totalPixel; ++i) {
+        int alpha = (arr[i] & 0xFF000000) >> 24;
+        int red = (arr[i] & 0x00FF0000) >> 16;
+        int green = (arr[i] & 0x0000FF00) >> 8;
+        int blue = (arr[i] & 0x000000FF);
+        //ここに計算処理を色々と書く。
+        narr[i] = (alpha << 24) | (table[red] << 16) | (table[green] << 8) | table[blue];
+    }
+    env->ReleaseIntArrayElements(src, arr, 0);
+    env->ReleaseIntArrayElements(r, narr, 0);
+    delete table;
+    return r;
+}
+
 JNIEXPORT jintArray JNICALL Java_sing_narcis_com_narcissing_FaceOverlayImageView_facedetect(JNIEnv *env,
                                                                                      jobject obj,
                                                                                      jintArray src,
