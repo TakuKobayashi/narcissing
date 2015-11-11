@@ -5,9 +5,11 @@
 #include "FFT4g.h"
 #include <vector>
 
+#include <opencv/cv.h>
 #include <opencv2/opencv.hpp>
 #include <opencv2/core/core.hpp>
 #include <opencv2/contrib/detection_based_tracker.hpp>
+#include <opencv2/highgui/highgui.hpp>
 
 using namespace std;
 using namespace cv;
@@ -305,6 +307,9 @@ JNIEXPORT jintArray JNICALL Java_sing_narcis_com_narcissing_FaceOverlayImageView
     int totalPixel = width * height;
     jintArray r = env->NewIntArray(totalPixel);
     jint *narr = env->GetIntArrayElements(r, 0);
+    IplImage* res = cvCreateImage(cvSize(width, height), 8, 4);
+    //memcpy(res->imageData, (unsigned char*) arr, res->imageSize);
+
     //Mat intMat_BGRA = Mat(width,height, narr);
     for (int i = 0; i < totalPixel; i++) {
         int alpha = (arr[i] & 0xFF000000) >> 24;
