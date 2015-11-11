@@ -23,4 +23,6 @@ LOCAL_SRC_FILES := jni_sample.cpp
 LOCAL_LDLIBS := -llog
 LOCAL_CFLAGS := -std=gnu++11
 
+LOCAL_SHARED_LIBRARIES := liblog
+
 include $(BUILD_SHARED_LIBRARY)

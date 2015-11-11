@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.PointF;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.os.Build;
@@ -11,6 +13,7 @@ import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutCompat;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.TextureView;
@@ -41,23 +44,29 @@ public class JniSampleActivity extends Activity {
     private native int[] grayscale(int[] pixcels,int width, int height,int value);
     private native int[] decodeYUV420SP(byte[] yuv,int width, int height);
     private native int[] mosaic(int[] pixcels,int width, int height,int dot);
+    private native int[] approximateColor(int[] pixcels,int width, int height,int targetColor, int threshold);
+
     private Bitmap mOrigin;
     private VerticalSeekBar mVerticalSeekBar;
     private TextView mSeekbarValue;
     private int currentPosition;
     private FaceOverlayImageView mFaceImage;
+    private PointF mTargetPoint;
+    private TextView mSelectPixelInfo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.jni_sample);
 
+        mTargetPoint = new PointF(0,0);
+
         mOrigin = BitmapFactory.decodeResource(getResources(), R.mipmap.face_sample);
 
         FilterPagerAdapter adapter = new FilterPagerAdapter(this);
 
         String[] array_str = getResources().getStringArray(R.array.filter_names);
-        for(String s : array_str){
+        for (String s : array_str) {
             adapter.add(s);
         }
         ViewPager pager = (ViewPager)findViewById(R.id.filterPager);
@@ -82,6 +91,21 @@ public class JniSampleActivity extends Activity {
 
         ImageView before = (ImageView) findViewById(R.id.before);
         before.setImageBitmap(mOrigin);
+        before.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (currentPosition == 2) {
+                    mTargetPoint.x = event.getX();
+                    mTargetPoint.y = event.getY();
+                    filter(currentPosition);
+                }
+                return false;
+            }
+        });
+
+        mSelectPixelInfo = (TextView) findViewById(R.id.selectPixelInfo);
+
+        /*
         before.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -92,6 +116,7 @@ public class JniSampleActivity extends Activity {
                 startActivityForResult(intent, REQUEST_GALLERY);
             }
         });
+        */
 
         mSeekbarValue = (TextView) findViewById(R.id.seekBarValue);
 
@@ -148,6 +173,7 @@ public class JniSampleActivity extends Activity {
     }
 
     private void filter(int position){
+        mSelectPixelInfo.setVisibility(View.INVISIBLE);
 
         Bitmap subbmp = mOrigin.copy(Bitmap.Config.ARGB_8888, true);
         int width = subbmp.getWidth();
@@ -159,6 +185,11 @@ public class JniSampleActivity extends Activity {
             pixels = grayscale(pixels, width, height, Math.max(mVerticalSeekBar.getProgress(), 1));
         }else if(position == 1){
             pixels = mosaic(pixels, width, height, Math.max(mVerticalSeekBar.getProgress(), 1));
+        }else if(position == 2){
+            mSelectPixelInfo.setVisibility(View.VISIBLE);
+            int targetColor = pixels[(int)mTargetPoint.x + (int)mTargetPoint.y * width];
+            mSelectPixelInfo.setText("x:" + (int)mTargetPoint.x + " y:" + (int)mTargetPoint.y+ " a:" + Color.alpha(targetColor)+ " r:" +Color.red(targetColor)+ " g:"+Color.green(targetColor)+" b:" + Color.blue(targetColor));
+            pixels = approximateColor(pixels, width, height, targetColor, Math.max(mVerticalSeekBar.getProgress(), 1));
         }
         subbmp.setPixels(pixels, 0, width, 0, 0, width, height);
         ImageView after = (ImageView) findViewById(R.id.after);

@@ -4,6 +4,7 @@
 #include <algorithm>
 #include "FFT4g.h"
 
+#include <opencv2/opencv.hpp>
 #include <opencv2/core/core.hpp>
 #include <opencv2/contrib/detection_based_tracker.hpp>
 
@@ -158,6 +159,43 @@ JNIEXPORT jintArray JNICALL Java_sing_narcis_com_narcissing_JniSampleActivity_mo
     return r;
 }
 
+JNIEXPORT jintArray JNICALL Java_sing_narcis_com_narcissing_JniSampleActivity_approximateColor(JNIEnv *env,
+                                                                                      jobject obj,
+                                                                                      jintArray src,
+                                                                                      jint width,
+                                                                                      jint height,
+                                                                                      jint targetColor,
+                                                                                      jint threshold) {
+    jint *arr = env->GetIntArrayElements(src, 0);
+    int totalPixel = width * height;
+    jintArray r = env->NewIntArray(totalPixel);
+    jint *narr = env->GetIntArrayElements(r, 0);
+    int targetAlpha = (targetColor & 0xFF000000) >> 24;
+    int targetRed = (targetColor & 0x00FF0000) >> 16;
+    int targetGreen = (targetColor & 0x0000FF00) >> 8;
+    int targetBlue = (targetColor & 0x000000FF);
+    for (int i = 0; i < totalPixel; i++) {
+        int alpha = (arr[i] & 0xFF000000) >> 24;
+        int red = (arr[i] & 0x00FF0000) >> 16;
+        int green = (arr[i] & 0x0000FF00) >> 8;
+        int blue = (arr[i] & 0x000000FF);
+        int a = alpha - targetAlpha;
+        int r = red - targetRed;
+        int g = green - targetAlpha;
+        int b = blue - targetBlue;
+        //__android_log_print(ANDROID_LOG_VERBOSE, "NativeCode", "%s(%d): %f", __FILE__, __LINE__, std::sqrt(r * r + g * g + b * b));
+        if(threshold < std::sqrt(r * r + g * g + b * b)){
+            narr[i] = (alpha << 24) | (red << 16) | (green << 8) | blue;
+        }else{
+            narr[i] = 0;
+        }
+        //__android_log_print(ANDROID_LOG_VERBOSE, "NativeCode", "%s(%d): %i", __FILE__, __LINE__, narr[i]);
+    }
+    env->ReleaseIntArrayElements(src, arr, 0);
+    env->ReleaseIntArrayElements(r, narr, 0);
+    return r;
+}
+
 JNIEXPORT jintArray JNICALL Java_sing_narcis_com_narcissing_FaceOverlayImageView_facedetect(JNIEnv *env,
                                                                                      jobject obj,
                                                                                      jintArray src,
@@ -168,6 +206,7 @@ JNIEXPORT jintArray JNICALL Java_sing_narcis_com_narcissing_FaceOverlayImageView
     int totalPixel = width * height;
     jintArray r = env->NewIntArray(totalPixel);
     jint *narr = env->GetIntArrayElements(r, 0);
+    //Mat intMat_BGRA = Mat(width,height, narr);
     for (int i = 0; i < totalPixel; i++) {
         int alpha = (arr[i] & 0xFF000000) >> 24;
         int red = (arr[i] & 0x00FF0000) >> 16;
