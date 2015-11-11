@@ -75,6 +75,24 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/faceImage"
         />
+
+    <Button
+        android:id="@+id/chanheImageButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/faceImage"
+        android:layout_alignParentLeft="true"
+        android:text="@string/change_image_button_text"
+        />
+
+    <Button
+        android:id="@+id/stockButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/faceImage"
+        android:layout_alignParentRight="true"
+        android:text="@string/stock_button_text"
+        />
 <!--
     <ImageView
         android:id="@+id/camera_decode_view"

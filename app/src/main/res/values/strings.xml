@@ -3,4 +3,6 @@
 
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    <string name="change_image_button_text">画像を切り替える</string>
+    <string name="stock_button_text">反映をストック</string>
 </resources>

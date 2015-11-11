@@ -20,6 +20,7 @@ import android.view.TextureView;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -114,8 +115,8 @@ public class JniSampleActivity extends Activity {
 
         mSelectPixelInfo = (TextView) findViewById(R.id.selectPixelInfo);
 
-        /*
-        before.setOnClickListener(new View.OnClickListener() {
+        Button changeImageButton = (Button) findViewById(R.id.chanheImageButton);
+        changeImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // ギャラリー呼び出し
@@ -125,7 +126,6 @@ public class JniSampleActivity extends Activity {
                 startActivityForResult(intent, REQUEST_GALLERY);
             }
         });
-        */
 
         mSeekbarValue = (TextView) findViewById(R.id.seekBarValue);
 
@@ -174,6 +174,7 @@ public class JniSampleActivity extends Activity {
                 in.close();
                 ImageView before = (ImageView) findViewById(R.id.before);
                 before.setImageBitmap(mOrigin);
+                mFaceImage.faceRecognize(mOrigin);
                 filter(currentPosition);
             } catch (Exception e) {
                 e.printStackTrace();
