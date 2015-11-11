@@ -45,6 +45,8 @@ public class JniSampleActivity extends Activity {
     private native int[] decodeYUV420SP(byte[] yuv,int width, int height);
     private native int[] mosaic(int[] pixcels,int width, int height,int dot);
     private native int[] approximateColor(int[] pixcels,int width, int height,int targetColor, int threshold);
+    private native int[] noiseRemove(int[] pixcels,int width, int height);
+
 
     private Bitmap mOrigin;
     private VerticalSeekBar mVerticalSeekBar;
@@ -75,6 +77,11 @@ public class JniSampleActivity extends Activity {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
                 currentPosition = position;
+                if(currentPosition == 2){
+                    mVerticalSeekBar.setMax((int) Math.ceil(Math.sqrt(255 * 255 + 255 * 255 + 255 * 255)));
+                }else{
+                    mVerticalSeekBar.setMax(256);
+                }
                 filter(currentPosition);
             }
 
@@ -190,6 +197,8 @@ public class JniSampleActivity extends Activity {
             int targetColor = pixels[(int)mTargetPoint.x + (int)mTargetPoint.y * width];
             mSelectPixelInfo.setText("x:" + (int)mTargetPoint.x + " y:" + (int)mTargetPoint.y+ " a:" + Color.alpha(targetColor)+ " r:" +Color.red(targetColor)+ " g:"+Color.green(targetColor)+" b:" + Color.blue(targetColor));
             pixels = approximateColor(pixels, width, height, targetColor, Math.max(mVerticalSeekBar.getProgress(), 1));
+        }else if(position == 3){
+            pixels = noiseRemove(pixels, width, height);
         }
         subbmp.setPixels(pixels, 0, width, 0, 0, width, height);
         ImageView after = (ImageView) findViewById(R.id.after);

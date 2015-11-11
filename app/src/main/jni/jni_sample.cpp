@@ -3,6 +3,7 @@
 #include <android/log.h>
 #include <algorithm>
 #include "FFT4g.h"
+#include <vector>
 
 #include <opencv2/opencv.hpp>
 #include <opencv2/core/core.hpp>
@@ -191,6 +192,35 @@ JNIEXPORT jintArray JNICALL Java_sing_narcis_com_narcissing_JniSampleActivity_ap
             narr[i] = (alpha << 24) | (red << 16) | (green << 8) | blue;
         }
         //__android_log_print(ANDROID_LOG_VERBOSE, "NativeCode", "%s(%d): %i", __FILE__, __LINE__, narr[i]);
+    }
+    env->ReleaseIntArrayElements(src, arr, 0);
+    env->ReleaseIntArrayElements(r, narr, 0);
+    return r;
+}
+
+JNIEXPORT jintArray JNICALL Java_sing_narcis_com_narcissing_JniSampleActivity_noiseRemove(JNIEnv *env,
+                                                                                      jobject obj,
+                                                                                      jintArray src,
+                                                                                      jint width,
+                                                                                      jint height) {
+    jint *arr = env->GetIntArrayElements(src, 0);
+    int totalPixel = width * height;
+    jintArray r = env->NewIntArray(totalPixel);
+    jint *narr = env->GetIntArrayElements(r, 0);
+    for (int y = 0; y < height; ++y) {
+        for (int x = 0; x < width; ++x) {
+            std::vector<int> data;
+            for (int yy = -1; yy <= 1; ++yy) {
+                for (int xx = -1; xx <= 1; ++xx) {
+                    if (x + xx < 0 || width <= x + xx || y + yy < 0 || height <= y + yy) continue;
+                    data.push_back(arr[(y + yy) * width + x + xx]);
+
+                }
+            }
+            std::sort(data.begin(), data.end());
+            narr[y * width + x] = data[(sizeof(data) / 2) + 1];
+            data.clear();
+        }
     }
     env->ReleaseIntArrayElements(src, arr, 0);
     env->ReleaseIntArrayElements(r, narr, 0);
