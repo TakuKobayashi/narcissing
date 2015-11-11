@@ -47,7 +47,7 @@ public class FilterPagerAdapter extends PagerAdapter {
         // View を生成
         TextView textView = new TextView(mContext);
         textView.setText(item);
-        textView.setTextSize(32);
+        textView.setTextSize(24);
         textView.setGravity(Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL);
 
         // コンテナに追加

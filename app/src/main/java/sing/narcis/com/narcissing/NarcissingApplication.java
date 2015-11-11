@@ -9,7 +9,7 @@ public class NarcissingApplication extends Application {
     super.onCreate();
     if(ApplicationHelper.hasSelfPermission(this, Manifest.permission.RECORD_AUDIO)) {
       AudioRecordThread.getInstance(AudioRecordThread.class).init(this);
-      AudioRecordThread.getInstance(AudioRecordThread.class).startRecording();
+      //AudioRecordThread.getInstance(AudioRecordThread.class).startRecording();
     }
     AssetImageLoader.getInstance(AssetImageLoader.class).init(this);
     AssetImageLoader.getInstance(AssetImageLoader.class).setImageAssetPathes("frame_png");

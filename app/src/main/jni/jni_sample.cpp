@@ -183,11 +183,12 @@ JNIEXPORT jintArray JNICALL Java_sing_narcis_com_narcissing_JniSampleActivity_ap
         int r = red - targetRed;
         int g = green - targetAlpha;
         int b = blue - targetBlue;
-        //__android_log_print(ANDROID_LOG_VERBOSE, "NativeCode", "%s(%d): %f", __FILE__, __LINE__, std::sqrt(r * r + g * g + b * b));
+        //__android_log_print(ANDROID_LOG_VERBOSE, "narcissing", "l:%d %i", __LINE__, alpha);
         if(threshold < std::sqrt(r * r + g * g + b * b)){
-            narr[i] = (alpha << 24) | (red << 16) | (green << 8) | blue;
-        }else{
+            //alphaは全て255のだがalphaを0にして送り返してもRGBだけで見るようになってしまって無意味なのでこうする
             narr[i] = 0;
+        }else{
+            narr[i] = (alpha << 24) | (red << 16) | (green << 8) | blue;
         }
         //__android_log_print(ANDROID_LOG_VERBOSE, "NativeCode", "%s(%d): %i", __FILE__, __LINE__, narr[i]);
     }
