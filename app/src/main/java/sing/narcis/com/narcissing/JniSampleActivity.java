@@ -46,7 +46,7 @@ public class JniSampleActivity extends Activity {
     private native int[] mosaic(int[] pixcels,int width, int height,int dot);
     private native int[] approximateColor(int[] pixcels,int width, int height,int targetColor, int threshold);
     private native int[] noiseRemove(int[] pixcels,int width, int height);
-
+    private native int[] negative(int[] pixcels,int width, int height);
 
     private Bitmap mOrigin;
     private VerticalSeekBar mVerticalSeekBar;
@@ -199,6 +199,8 @@ public class JniSampleActivity extends Activity {
             pixels = approximateColor(pixels, width, height, targetColor, Math.max(mVerticalSeekBar.getProgress(), 1));
         }else if(position == 3){
             pixels = noiseRemove(pixels, width, height);
+        }else if(position == 4){
+            pixels = negative(pixels, width, height);
         }
         subbmp.setPixels(pixels, 0, width, 0, 0, width, height);
         ImageView after = (ImageView) findViewById(R.id.after);
