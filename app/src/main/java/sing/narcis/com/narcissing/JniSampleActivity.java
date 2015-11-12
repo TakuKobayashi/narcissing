@@ -32,24 +32,10 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public class JniSampleActivity extends Activity {
-    static {
-        System.loadLibrary("jni_sample");
-    }
-
     private Camera mCamera;
     private View mPreview;
     //private ImageView mCameraDecodeView;
     private static final int REQUEST_GALLERY = 1;
-
-    private native int[] convert(int[] pixcels,int width, int height);
-    private native int[] grayscale(int[] pixcels,int width, int height,int value);
-    private native int[] decodeYUV420SP(byte[] yuv,int width, int height);
-    private native int[] mosaic(int[] pixcels,int width, int height,int dot);
-    private native int[] approximateColor(int[] pixcels,int width, int height,int targetColor, int threshold);
-    private native int[] noiseRemove(int[] pixcels,int width, int height);
-    private native int[] negative(int[] pixcels,int width, int height);
-    private native int[] brightness(int[] pixcels,int width, int height);
-
 
     private Bitmap mOrigin;
     private VerticalSeekBar mVerticalSeekBar;
@@ -192,20 +178,20 @@ public class JniSampleActivity extends Activity {
         int[] pixels = new int[width * height];
         subbmp.getPixels(pixels, 0, width, 0, 0, width, height);
         if(position == 0){
-            pixels = grayscale(pixels, width, height, Math.max(mVerticalSeekBar.getProgress(), 1));
+            pixels = NativeHelper.grayscale(pixels, width, height, Math.max(mVerticalSeekBar.getProgress(), 1));
         }else if(position == 1){
-            pixels = mosaic(pixels, width, height, Math.max(mVerticalSeekBar.getProgress(), 1));
+            pixels = NativeHelper.mosaic(pixels, width, height, Math.max(mVerticalSeekBar.getProgress(), 1));
         }else if(position == 2){
             mSelectPixelInfo.setVisibility(View.VISIBLE);
             int targetColor = pixels[(int)mTargetPoint.x + (int)mTargetPoint.y * width];
             mSelectPixelInfo.setText("x:" + (int)mTargetPoint.x + " y:" + (int)mTargetPoint.y+ " a:" + Color.alpha(targetColor)+ " r:" +Color.red(targetColor)+ " g:"+Color.green(targetColor)+" b:" + Color.blue(targetColor));
-            pixels = approximateColor(pixels, width, height, targetColor, Math.max(mVerticalSeekBar.getProgress(), 1));
+            pixels = NativeHelper.approximateColor(pixels, width, height, targetColor, Math.max(mVerticalSeekBar.getProgress(), 1));
         }else if(position == 3){
-            pixels = brightness(pixels, width, height);
+            pixels = NativeHelper.brightness(pixels, width, height);
         }else if(position == 4){
-            pixels = noiseRemove(pixels, width, height);
+            pixels = NativeHelper.noiseRemove(pixels, width, height);
         }else if(position == 5){
-            pixels = negative(pixels, width, height);
+            pixels = NativeHelper.negative(pixels, width, height);
         }
         subbmp.setPixels(pixels, 0, width, 0, 0, width, height);
         ImageView after = (ImageView) findViewById(R.id.after);
@@ -218,7 +204,7 @@ public class JniSampleActivity extends Activity {
         @Override
         public void onPreviewFrame(byte[] data, Camera camera) {
             Camera.Size previewSize = camera.getParameters().getPreviewSize();
-            int[] decoded = decodeYUV420SP(data, previewSize.width, previewSize.height);
+            int[] decoded = NativeHelper.decodeYUV420SP(data, previewSize.width, previewSize.height);
             Bitmap bitmap = Bitmap.createBitmap(decoded, previewSize.width, previewSize.height, Bitmap.Config.ARGB_8888);
             //mCameraDecodeView.setImageBitmap(bitmap);
             decoded = null;

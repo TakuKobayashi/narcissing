@@ -10,10 +10,6 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 public class AudioRecordThread extends ContextSingletonBase<AudioRecordThread> {
-    static {
-        System.loadLibrary("jni_sample");
-    }
-
     private static final int SAMPLING_RATE = 44100;
     private byte[] mRecordingBuffer;
     private AudioRecord mAudioRecord = null;
@@ -27,8 +23,6 @@ public class AudioRecordThread extends ContextSingletonBase<AudioRecordThread> {
     // 分解能の計算
     double resol = ((SAMPLING_RATE / (double) FFT_SIZE));
 
-
-    private native void FFTrdft(int size, int isgn, double[] fft_data);
 
     public void init(Context context) {
         super.init(context);
@@ -66,7 +60,7 @@ public class AudioRecordThread extends ContextSingletonBase<AudioRecordThread> {
                     for (int i = 0; i < FFT_SIZE; i++) {
                         FFTdata[i] = (double) s[i];
                     }
-                    FFTrdft(FFT_SIZE, 1, FFTdata);
+                    NativeHelper.FFTrdft(FFT_SIZE, 1, FFTdata);
                     // デシベルの計算
                     double[] dbfs = new double[FFT_SIZE / 2];
                     double max_db = -120d;

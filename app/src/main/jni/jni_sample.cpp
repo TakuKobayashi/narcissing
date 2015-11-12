@@ -15,15 +15,7 @@ using namespace std;
 using namespace cv;
 
 extern "C" {
-JNIEXPORT jstring JNICALL Java_com_taku_kobayashi_jnisample_MainActivity_hello(JNIEnv *env,
-                                                                               jobject thiz) {
-    //__android_log_print(ANDROID_LOG_INFO, __FILE__, "hoge");
-    //when use C
-    //return (*env)->NewStringUTF(env, "Hello world!");
-    return env->NewStringUTF("Hello world!");
-}
-
-JNIEXPORT jintArray JNICALL Java_sing_narcis_com_narcissing_JniSampleActivity_convert(JNIEnv *env,
+JNIEXPORT jintArray JNICALL Java_sing_narcis_com_narcissing_NativeHelper_convert(JNIEnv *env,
                                                                                       jobject obj,
                                                                                       jintArray src,
                                                                                       jint width,
@@ -45,7 +37,7 @@ JNIEXPORT jintArray JNICALL Java_sing_narcis_com_narcissing_JniSampleActivity_co
     return r;
 }
 
-JNIEXPORT jintArray JNICALL Java_sing_narcis_com_narcissing_JniSampleActivity_grayscale(JNIEnv *env,
+JNIEXPORT jintArray JNICALL Java_sing_narcis_com_narcissing_NativeHelper_grayscale(JNIEnv *env,
                                                                                         jobject obj,
                                                                                         jintArray src,
                                                                                         jint width,
@@ -76,7 +68,7 @@ JNIEXPORT jintArray JNICALL Java_sing_narcis_com_narcissing_JniSampleActivity_gr
     return r;
 }
 
-JNIEXPORT jintArray JNICALL Java_sing_narcis_com_narcissing_JniSampleActivity_decodeYUV420SP(
+JNIEXPORT jintArray JNICALL Java_sing_narcis_com_narcissing_NativeHelper_decodeYUV420SP(
         JNIEnv *env, jobject obj, jbyteArray yuv420sp, jint width, jint height) {
     jbyte *yuv420 = env->GetByteArrayElements(yuv420sp, 0);
     int frameSize = width * height;
@@ -109,7 +101,7 @@ JNIEXPORT jintArray JNICALL Java_sing_narcis_com_narcissing_JniSampleActivity_de
     env->ReleaseIntArrayElements(r, narr, 0);
     return r;
 }
-JNIEXPORT void JNICALL Java_sing_narcis_com_narcissing_AudioRecordThread_FFTrdft(
+JNIEXPORT void JNICALL Java_sing_narcis_com_narcissing_NativeHelper_FFTrdft(
         JNIEnv *env, jobject obj, jint size, jint isgn, jdoubleArray fft_data) {
     jdoubleArray fft_doubles = env->NewDoubleArray(size);
     jdouble *darr = env->GetDoubleArrayElements(fft_data, 0);
@@ -118,7 +110,7 @@ JNIEXPORT void JNICALL Java_sing_narcis_com_narcissing_AudioRecordThread_FFTrdft
     env->ReleaseDoubleArrayElements(fft_doubles, darr, 0);
 }
 
-JNIEXPORT jintArray JNICALL Java_sing_narcis_com_narcissing_JniSampleActivity_mosaic(JNIEnv *env,
+JNIEXPORT jintArray JNICALL Java_sing_narcis_com_narcissing_NativeHelper_mosaic(JNIEnv *env,
                                                                                      jobject obj,
                                                                                      jintArray src,
                                                                                      jint width,
@@ -162,7 +154,7 @@ JNIEXPORT jintArray JNICALL Java_sing_narcis_com_narcissing_JniSampleActivity_mo
     return r;
 }
 
-JNIEXPORT jintArray JNICALL Java_sing_narcis_com_narcissing_JniSampleActivity_approximateColor(JNIEnv *env,
+JNIEXPORT jintArray JNICALL Java_sing_narcis_com_narcissing_NativeHelper_approximateColor(JNIEnv *env,
                                                                                       jobject obj,
                                                                                       jintArray src,
                                                                                       jint width,
@@ -200,7 +192,7 @@ JNIEXPORT jintArray JNICALL Java_sing_narcis_com_narcissing_JniSampleActivity_ap
     return r;
 }
 
-JNIEXPORT jintArray JNICALL Java_sing_narcis_com_narcissing_JniSampleActivity_noiseRemove(JNIEnv *env,
+JNIEXPORT jintArray JNICALL Java_sing_narcis_com_narcissing_NativeHelper_noiseRemove(JNIEnv *env,
                                                                                       jobject obj,
                                                                                       jintArray src,
                                                                                       jint width,
@@ -228,7 +220,7 @@ JNIEXPORT jintArray JNICALL Java_sing_narcis_com_narcissing_JniSampleActivity_no
     return r;
 }
 
-JNIEXPORT jintArray JNICALL Java_sing_narcis_com_narcissing_JniSampleActivity_negative(JNIEnv *env,
+JNIEXPORT jintArray JNICALL Java_sing_narcis_com_narcissing_NativeHelper_negative(JNIEnv *env,
                                                                                       jobject obj,
                                                                                       jintArray src,
                                                                                       jint width,
@@ -250,7 +242,7 @@ JNIEXPORT jintArray JNICALL Java_sing_narcis_com_narcissing_JniSampleActivity_ne
     return r;
 }
 
-JNIEXPORT jintArray JNICALL Java_sing_narcis_com_narcissing_JniSampleActivity_brightness(JNIEnv *env,
+JNIEXPORT jintArray JNICALL Java_sing_narcis_com_narcissing_NativeHelper_brightness(JNIEnv *env,
                                                                                        jobject obj,
                                                                                        jintArray src,
                                                                                        jint width,
@@ -297,7 +289,7 @@ JNIEXPORT jintArray JNICALL Java_sing_narcis_com_narcissing_JniSampleActivity_br
     return r;
 }
 
-JNIEXPORT jintArray JNICALL Java_sing_narcis_com_narcissing_FaceOverlayImageView_facedetect(JNIEnv *env,
+JNIEXPORT jintArray JNICALL Java_sing_narcis_com_narcissing_NativeHelper_facedetect(JNIEnv *env,
                                                                                      jobject obj,
                                                                                      jintArray src,
                                                                                      jint width,
