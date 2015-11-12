@@ -4,6 +4,7 @@
 #include <algorithm>
 #include "FFT4g.h"
 #include <vector>
+#include <math.h>
 
 #include <opencv/cv.h>
 #include <opencv2/opencv.hpp>
@@ -286,6 +287,34 @@ JNIEXPORT jintArray JNICALL Java_sing_narcis_com_narcissing_NativeHelper_brightn
     env->ReleaseIntArrayElements(src, arr, 0);
     env->ReleaseIntArrayElements(r, narr, 0);
     delete table;
+    return r;
+}
+
+JNIEXPORT jintArray JNICALL Java_sing_narcis_com_narcissing_NativeHelper_posterize(JNIEnv *env,
+                                                                                  jobject obj,
+                                                                                  jintArray src,
+                                                                                  jint width,
+                                                                                  jint height,
+                                                                                  jint step) {
+    jint *arr = env->GetIntArrayElements(src, 0);
+    int totalPixel = width * height;
+    jintArray r = env->NewIntArray(totalPixel);
+    jint *narr = env->GetIntArrayElements(r, 0);
+    std::vector<float> stepArray;
+    for(int i = 0; i < step; ++i) {
+        stepArray.push_back(std::round((float)255 / (step - 1) * i));
+    }
+    for (int i = 0; i < totalPixel; i++) {
+        int alpha = (arr[i] & 0xFF000000) >> 24;
+        int red = (arr[i] & 0x00FF0000) >> 16;
+        int green = (arr[i] & 0x0000FF00) >> 8;
+        int blue = (arr[i] & 0x000000FF);
+        //ここに計算処理を色々と書く。
+        narr[i] = (alpha << 24) | (stepArray[floor(red / (256 / step))] << 16) | (stepArray[floor(green / (256 / step))] << 8) | stepArray[floor(blue / (256 / step))];
+    }
+    env->ReleaseIntArrayElements(src, arr, 0);
+    env->ReleaseIntArrayElements(r, narr, 0);
+    delete stepArray;
     return r;
 }
 

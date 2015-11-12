@@ -192,7 +192,10 @@ public class JniSampleActivity extends Activity {
             pixels = NativeHelper.noiseRemove(pixels, width, height);
         }else if(position == 5){
             pixels = NativeHelper.negative(pixels, width, height);
+        }else if(position == 6){
+            pixels = NativeHelper.posterize(pixels, width, height, Math.max(mVerticalSeekBar.getProgress(), 1));
         }
+
         subbmp.setPixels(pixels, 0, width, 0, 0, width, height);
         ImageView after = (ImageView) findViewById(R.id.after);
         after.setImageBitmap(subbmp);

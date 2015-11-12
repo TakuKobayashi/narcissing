@@ -15,4 +15,5 @@ public class NativeHelper {
     public static native int[] negative(int[] pixcels,int width, int height);
     public static native int[] brightness(int[] pixcels,int width, int height);
     public static native int[] facedetect(int[] pixcels,int width, int height);
+    public static native int[] posterize(int[] pixcels,int width, int height,int step);
 }
