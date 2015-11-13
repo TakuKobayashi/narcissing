@@ -369,7 +369,19 @@ JNIEXPORT jintArray JNICALL Java_sing_narcis_com_narcissing_NativeHelper_gradati
     int pointColor2 = arr[width - 1];
     int pointColor3 = arr[(height - 1) * width];
     int pointColor4 = arr[width * height - 1];
-    for (int i = 0; i < totalPixel; i++) {
+
+    int rAlpha = ((pointColor2 & 0xFF000000) >> 24) - ((pointColor1 & 0xFF000000) >> 24);
+    int rRed = ((pointColor2 & 0x00FF0000) >> 16) - ((pointColor1 & 0x00FF0000) >> 16);
+    int rGreen = ((pointColor2 & 0x0000FF00) >> 8) - ((pointColor1 & 0x0000FF00) >> 8);
+    int rBlue = (pointColor2 & 0x000000FF) - (pointColor1 & 0x000000FF);
+    int cAlpha = ((pointColor4 & 0xFF000000) >> 24) - ((pointColor1 & 0xFF000000) >> 24);
+    int cRed = ((pointColor4 & 0x00FF0000) >> 16) - ((pointColor1 & 0x00FF0000) >> 16);
+    int cGreen = ((pointColor4 & 0x0000FF00) >> 8) - ((pointColor1 & 0x0000FF00) >> 8);
+    int cBlue = (pointColor4 & 0x000000FF) - (pointColor1 & 0x000000FF);
+    for (int y = 0; y < height; ++y) {
+        for(int x = 0;x < width;++x){
+            arr[y * width + x] = arr[y * width] + ;
+        }
         int alpha = (arr[i] & 0xFF000000) >> 24;
         int red = (arr[i] & 0x00FF0000) >> 16;
         int green = (arr[i] & 0x0000FF00) >> 8;
