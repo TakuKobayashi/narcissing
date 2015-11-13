@@ -178,7 +178,7 @@ JNIEXPORT jintArray JNICALL Java_sing_narcis_com_narcissing_NativeHelper_approxi
         int g = green - targetAlpha;
         int b = blue - targetBlue;
         //__android_log_print(ANDROID_LOG_VERBOSE, "narcissing", "l:%d %i", __LINE__, alpha);
-        if(threshold < std::sqrt(r * r + g * g + b * b)){
+        if(threshold < sqrt(r * r + g * g + b * b)){
             //alphaは全て255のだがalphaを0にして送り返してもRGBだけで見るようになってしまって無意味なのでこうする
             narr[i] = 0;
         }else{
@@ -298,21 +298,24 @@ JNIEXPORT jintArray JNICALL Java_sing_narcis_com_narcissing_NativeHelper_posteri
     int totalPixel = width * height;
     jintArray r = env->NewIntArray(totalPixel);
     jint *narr = env->GetIntArrayElements(r, 0);
-    std::vector<float> stepArray;
+    vector<float> stepArray;
     for(int i = 0; i < step; ++i) {
-        stepArray.push_back(std::round((float)255 / (step - 1) * i));
+        stepArray.push_back(round((float)255 / (step - 1) * i));
     }
     for (int i = 0; i < totalPixel; i++) {
         int alpha = (arr[i] & 0xFF000000) >> 24;
         int red = (arr[i] & 0x00FF0000) >> 16;
         int green = (arr[i] & 0x0000FF00) >> 8;
         int blue = (arr[i] & 0x000000FF);
+        int redPost = stepArray[floor(red / (256 / step))];
+        int greenPost = stepArray[floor(green / (256 / step))];
+        int bluePost = stepArray[floor(blue / (256 / step))];
         //ここに計算処理を色々と書く。
-        narr[i] = (alpha << 24) | (stepArray[floor(red / (256 / step))] << 16) | (stepArray[floor(green / (256 / step))] << 8) | stepArray[floor(blue / (256 / step))];
+        narr[i] = (alpha << 24) | redPost << 16 | greenPost << 8 | bluePost;
     }
     env->ReleaseIntArrayElements(src, arr, 0);
     env->ReleaseIntArrayElements(r, narr, 0);
-    delete stepArray;
+    stepArray.clear();
     return r;
 }
 
@@ -326,9 +329,9 @@ JNIEXPORT jintArray JNICALL Java_sing_narcis_com_narcissing_NativeHelper_posteri
     int totalPixel = width * height;
     jintArray r = env->NewIntArray(totalPixel);
     jint *narr = env->GetIntArrayElements(r, 0);
-    std::vector<float> stepArray;
+    vector<float> stepArray;
     for(int i = 0; i < step; ++i) {
-        stepArray.push_back(std::round((float)255 / (step - 1) * i));
+        stepArray.push_back(round((float)255 / (step - 1) * i));
     }
     for (int i = 0; i < totalPixel; i++) {
         int alpha = (arr[i] & 0xFF000000) >> 24;
@@ -341,15 +344,15 @@ JNIEXPORT jintArray JNICALL Java_sing_narcis_com_narcissing_NativeHelper_posteri
         int gray = (int) (0.298912 * bluePost + 0.586611 * greenPost + 0.114478 * redPost);
         //輝度
         int Y =  0.299 * red + 0.587 * green + 0.114 * blue;
-        int max = max(max(red, green), blue);
-        int min = min(min(red, green), blue);
+        //int max = max(max(red, green), blue);
+        //int min = min(min(red, green), blue);
         //明度 ＝ (RGBの最大値＋RGBの最小値)÷２
         //ここに計算処理を色々と書く。
         narr[i] = (alpha << 24) | (gray << 16) | (gray << 8) | gray;
     }
     env->ReleaseIntArrayElements(src, arr, 0);
     env->ReleaseIntArrayElements(r, narr, 0);
-    delete stepArray;
+    stepArray.clear();
     return r;
 }
 
