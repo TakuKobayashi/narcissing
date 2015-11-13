@@ -52,7 +52,7 @@ public class JniSampleActivity extends Activity {
 
         mTargetPoint = new PointF(0,0);
 
-        mOrigin = BitmapFactory.decodeResource(getResources(), R.mipmap.jni_sample);
+        mOrigin = BitmapFactory.decodeResource(getResources(), R.mipmap.face_sample);
 
         FilterPagerAdapter adapter = new FilterPagerAdapter(this);
 

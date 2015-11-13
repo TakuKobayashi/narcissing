@@ -16,14 +16,12 @@ LOCAL_PATH := $(call my-dir)
 
 include $(CLEAR_VARS)
 
-include ../libs/opencv/OpenCV.mk
+include ./OpenCV.mk
 
 LOCAL_MODULE    := jni_sample
 LOCAL_SRC_FILES := jni_sample.cpp
-LOCAL_LDLIBS := -llog -ldl
+LOCAL_LDLIBS := -llog
 LOCAL_CFLAGS := -std=gnu++11
-
-LOCAL_C_INCLUDES += $(LOCAL_PATH)
 
 LOCAL_SHARED_LIBRARIES := liblog
 
