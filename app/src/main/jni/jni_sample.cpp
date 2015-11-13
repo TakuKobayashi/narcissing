@@ -356,6 +356,36 @@ JNIEXPORT jintArray JNICALL Java_sing_narcis_com_narcissing_NativeHelper_posteri
     return r;
 }
 
+JNIEXPORT jintArray JNICALL Java_sing_narcis_com_narcissing_NativeHelper_gradation(JNIEnv *env,
+                                                                                   jobject obj,
+                                                                                   jintArray src,
+                                                                                   jint width,
+                                                                                   jint height) {
+    jint *arr = env->GetIntArrayElements(src, 0);
+    int totalPixel = width * height;
+    jintArray r = env->NewIntArray(totalPixel);
+    jint *narr = env->GetIntArrayElements(r, 0);
+    int pointColor1 = arr[0];
+    int pointColor2 = arr[width - 1];
+    int pointColor3 = arr[(height - 1) * width];
+    int pointColor4 = arr[width * height - 1];
+    for (int i = 0; i < totalPixel; i++) {
+        int alpha = (arr[i] & 0xFF000000) >> 24;
+        int red = (arr[i] & 0x00FF0000) >> 16;
+        int green = (arr[i] & 0x0000FF00) >> 8;
+        int blue = (arr[i] & 0x000000FF);
+        int redPost = stepArray[floor(red / (()256 / step))];
+        int greenPost = stepArray[floor(green / (256 / step))];
+        int bluePost = stepArray[floor(blue / (256 / step))];
+        //ここに計算処理を色々と書く。
+        narr[i] = (alpha << 24) | redPost << 16 | greenPost << 8 | bluePost;
+    }
+    env->ReleaseIntArrayElements(src, arr, 0);
+    env->ReleaseIntArrayElements(r, narr, 0);
+    stepArray.clear();
+    return r;
+}
+
 JNIEXPORT jintArray JNICALL Java_sing_narcis_com_narcissing_NativeHelper_facedetect(JNIEnv *env,
                                                                                      jobject obj,
                                                                                      jintArray src,
