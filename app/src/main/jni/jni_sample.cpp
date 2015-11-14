@@ -175,7 +175,7 @@ JNIEXPORT jintArray JNICALL Java_sing_narcis_com_narcissing_NativeHelper_approxi
         int blue = (arr[i] & 0x000000FF);
         int a = alpha - targetAlpha;
         int r = red - targetRed;
-        int g = green - targetAlpha;
+        int g = green - targetGreen;
         int b = blue - targetBlue;
         //__android_log_print(ANDROID_LOG_VERBOSE, "narcissing", "l:%d %i", __LINE__, alpha);
         if(threshold < sqrt(r * r + g * g + b * b)){
@@ -380,21 +380,23 @@ JNIEXPORT jintArray JNICALL Java_sing_narcis_com_narcissing_NativeHelper_gradati
     int cBlue = (pointColor4 & 0x000000FF) - (pointColor1 & 0x000000FF);
     for (int y = 0; y < height; ++y) {
         for(int x = 0;x < width;++x){
-            arr[y * width + x] = arr[y * width] + ;
+            //arr[y * width + x] = arr[y * width] + ;
         }
+        /*
         int alpha = (arr[i] & 0xFF000000) >> 24;
         int red = (arr[i] & 0x00FF0000) >> 16;
         int green = (arr[i] & 0x0000FF00) >> 8;
         int blue = (arr[i] & 0x000000FF);
-        int redPost = stepArray[floor(red / (()256 / step))];
+        int redPost = stepArray[floor(red / (256 / step))];
         int greenPost = stepArray[floor(green / (256 / step))];
         int bluePost = stepArray[floor(blue / (256 / step))];
         //ここに計算処理を色々と書く。
         narr[i] = (alpha << 24) | redPost << 16 | greenPost << 8 | bluePost;
+        */
     }
     env->ReleaseIntArrayElements(src, arr, 0);
     env->ReleaseIntArrayElements(r, narr, 0);
-    stepArray.clear();
+    //stepArray.clear();
     return r;
 }
 
